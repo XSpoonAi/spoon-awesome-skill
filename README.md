@@ -265,7 +265,7 @@ description: Brief description for triggering
 
 ```bash
 # Clone the repository
-git clone https://github.com/anthropics/spoon-awesome-skill.git
+git clone https://github.com/XSpoonAi/spoon-awesome-skill.git
 
 # Copy to your project's skill directory
 mkdir -p your-project/.claude/skills
