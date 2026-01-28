@@ -1,0 +1,4 @@
+# Documentation Generator Skill Dependencies
+# Core dependencies
+pydantic>=2.0.0
+spoon-ai>=0.1.0
