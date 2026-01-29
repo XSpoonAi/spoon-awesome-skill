@@ -19,6 +19,7 @@ This collection provides Claude Code with specialized capabilities for Web3 task
 | **Identity** | identity-auth | SIWE, ENS resolution, session management |
 | **Security** | security-analysis | GoPlus, Honeypot detection, MEV protection |
 | **DAO** | dao-tooling | Snapshot, Tally, Governor voting automation |
+| **Gas** | gas-optimization | Base fee prediction, batch vs separate, EIP-1559, EIP-4844 blob |
 
 ## Directory Structure
 
@@ -86,12 +87,22 @@ web3-skills/
 │       ├── goplus_security.py  # GoPlus token security
 │       ├── honeypot_check.py   # Honeypot detection
 │       └── tenderly_simulate.py # Transaction simulation
-└── dao-tooling/
-    ├── SKILL.md             # DAO governance automation
+├── dao-tooling/
+│   ├── SKILL.md             # DAO governance automation
+│   └── scripts/
+│       ├── snapshot_monitor.py  # Snapshot proposals
+│       ├── snapshot_vote.py     # Snapshot voting
+│       └── governor_vote.py     # On-chain voting
+└── gas-optimization/
+    ├── SKILL.md             # Gas optimization (when/how to send cheaper)
+    ├── README.md
     └── scripts/
-        ├── snapshot_monitor.py  # Snapshot proposals
-        ├── snapshot_vote.py     # Snapshot voting
-        └── governor_vote.py     # On-chain voting
+        ├── common.py            # Shared config and RPC helpers
+        ├── base_fee_predict.py  # Base fee history, when-to-send
+        ├── batch_quote.py       # Batch vs separate gas
+        ├── estimate_optimize.py # eth_estimateGas + EIP-1559
+        ├── blob_quote.py        # EIP-4844 blob (Ethereum)
+        └── optimization_report.py # All-in-one report
 ```
 
 ## Quick Start

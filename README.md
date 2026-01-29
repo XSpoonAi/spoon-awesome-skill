@@ -2,12 +2,12 @@
 
 A curated collection of high-quality Claude Code skills for SpoonOS development, Web3 integrations, Web2 services, and development tools.
 
-**57+ Python scripts** across **31 skills** in 4 collections:
+**62+ Python scripts** across **32 skills** in 4 collections:
 
 | Collection | Skills | Status | Purpose |
 |------------|--------|--------|---------|
 | [SpoonOS Skills](./spoonos-skills/) | 8 | 🟢 Complete | Vibe Coding for agent development |
-| [Web3 Skills](./web3-skills/) | 11 | 🟢 Complete | Blockchain integrations for agents |
+| [Web3 Skills](./web3-skills/) | 12 | 🟢 Complete | Blockchain integrations for agents |
 | [Web2 Skills](./web2-skills/) | 6 | 🔵 Open for Contributions | API & service integrations |
 | [Dev Skills](./dev-skills/) | 6 | 🔵 Open for Contributions | Development workflow tools |
 
@@ -135,7 +135,7 @@ Copy these skills to `.claude/skills/` and use Vibe Coding to generate complete 
 
 [View SpoonOS Skills Documentation →](./spoonos-skills/README.md)
 
-### Web3 Skills (11 skills, 36 scripts) — For Skill Agent Integrations
+### Web3 Skills (12 skills, 41 scripts) — For Skill Agent Integrations
 
 **Provide blockchain tools for `SpoonReactSkill` agents to use.**
 
@@ -154,6 +154,7 @@ Copy these skills to `.agent/skills/` and your skill agents will automatically l
 | [Identity & Auth](./web3-skills/identity-auth/) | SIWE, ENS, sessions | EVM | 3 |
 | [Security Analysis](./web3-skills/security-analysis/) | GoPlus, Honeypot, Flashbots | EVM | 4 |
 | [DAO Tooling](./web3-skills/dao-tooling/) | Snapshot, Tally, Governor | EVM | 4 |
+| [Gas Optimization](./web3-skills/gas-optimization/) | Base fee, batch, EIP-1559, blob | EVM | 5 |
 
 [View Web3 Skills Documentation →](./web3-skills/README.md)
 
