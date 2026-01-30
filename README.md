@@ -10,8 +10,8 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 
 | Challenge Track | Skills | Status | Focus |
 |-----------------|--------|--------|-------|
-| [Web3 Data Intelligence](./web3-data-intelligence/) | 2 | 🟢 Complete | On-chain analysis & insights |
-| [Web3 Core Operations](./web3-core-operations/) | 9 | 🟢 Complete | Smart contracts & protocols |
+| [Web3 Data Intelligence](./web3-data-intelligence/) | 2 | 🔵 Open for Submissions | On-chain analysis & insights |
+| [Web3 Core Operations](./web3-core-operations/) | 9 | 🔵 Open for Submissions | Smart contracts & protocols |
 | [AI-Enhanced Productivity](./ai-productivity/) | 6 | 🔵 Open for Submissions | API & automation |
 | [Enterprise & Team Skills](./enterprise-skills/) | 6 | 🔵 Open for Submissions | Code quality & collaboration |
 | [Platform Challenge](./platform-challenge/) | - | 🆕 Meta Track | Skill routing & coverage |

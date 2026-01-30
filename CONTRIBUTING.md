@@ -8,10 +8,10 @@ Thank you for your interest in contributing! This guide will help you submit hig
 
 | Challenge Track | Directory | Purpose | Status |
 |-----------------|-----------|---------|--------|
-| Web3 Data Intelligence | `web3-data-intelligence/` | On-chain analysis & insights | 🟢 Accepting PRs |
-| Web3 Core Operations | `web3-core-operations/` | Smart contracts & protocols | 🟢 Accepting PRs |
-| AI-Enhanced Productivity | `ai-productivity/` | API & automation skills | 🔵 Open |
-| Enterprise & Team | `enterprise-skills/` | Code quality & collaboration | 🔵 Open |
+| Web3 Data Intelligence | `web3-data-intelligence/` | On-chain analysis & insights | 🔵 Open for Submissions |
+| Web3 Core Operations | `web3-core-operations/` | Smart contracts & protocols | 🔵 Open for Submissions |
+| AI-Enhanced Productivity | `ai-productivity/` | API & automation skills | 🔵 Open for Submissions |
+| Enterprise & Team | `enterprise-skills/` | Code quality & collaboration | 🔵 Open for Submissions |
 | Platform Challenge | `platform-challenge/` | Skill routing & coverage | 🆕 Meta |
 
 | Core Collection | Directory | Purpose | Status |
