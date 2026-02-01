@@ -2,7 +2,7 @@
 name: gemini-vision
 description: Analyze images using Google Gemini 2.0 Flash with proxy support, retry logic, and mock mode.
 version: 1.0.0
-author: Moxan
+author: Moxan <namemoxan@gmail.com>
 tags: [ai, vision, gemini, image-analysis]
 ---
 
