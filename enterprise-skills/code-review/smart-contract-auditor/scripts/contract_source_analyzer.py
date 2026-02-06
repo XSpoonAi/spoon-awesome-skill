@@ -245,7 +245,7 @@ def deduplicate_findings(findings: list) -> list:
 
 
 def calculate_risk_score(findings: list) -> dict:
-    """Calculate risk score from findings."""
+    """Calculate risk score from findings based on unique patterns found."""
     severity_weights = {
         "CRITICAL": 4,
         "HIGH": 3,
@@ -255,11 +255,18 @@ def calculate_risk_score(findings: list) -> dict:
     }
     severity_counts = {"CRITICAL": 0, "HIGH": 0, "MEDIUM": 0, "LOW": 0, "INFO": 0}
 
+    for f in findings:
+        severity_counts[f["severity"]] = severity_counts.get(f["severity"], 0) + 1
+
+    # Score based on unique patterns (not individual occurrences)
+    # This prevents inflated scores from repeated patterns like assembly usage
+    seen_patterns = set()
     score = 0
     for f in findings:
-        sev = f["severity"]
-        severity_counts[sev] = severity_counts.get(sev, 0) + 1
-        score += severity_weights.get(sev, 0)
+        pattern_key = f["pattern"]
+        if pattern_key not in seen_patterns:
+            seen_patterns.add(pattern_key)
+            score += severity_weights.get(f["severity"], 0)
 
     # Normalize to 0-10 scale
     score = min(score, 10)
