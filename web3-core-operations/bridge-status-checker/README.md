@@ -1,191 +1,170 @@
-# Bridge Status Checker (Track: web3-core-operations)
+# Bridge Status Checker
 
-A comprehensive tool to track cross-chain bridge transactions and check completion status across multiple blockchain networks and bridges.
-
-## Overview
-
-Bridge Status Checker provides real-time monitoring of bridge transactions across major chains including Ethereum, Polygon, Arbitrum, Optimism, Base, BSC, zkSync, and Linea. It supports multiple bridge protocols including Stargate, Wormhole, Across, and Hop.
+Real-time cross-chain bridge transaction tracking using direct RPC queries. Monitor bridge transactions across 8+ EVM chains (Ethereum, Polygon, Arbitrum, Optimism, Base, BSC, zkSync, Linea) and 4 bridge protocols (Stargate, Wormhole, Across, Hop).
 
 ## Features
 
-- ✅ Multi-chain support (8+ chains)
-- ✅ Multi-bridge support (Stargate, Wormhole, Across, Hop)
-- ✅ Transaction status verification
-- ✅ Block explorer integration
-- ✅ Bridge health monitoring
-- ✅ Detailed tracking information
-- ✅ Next steps recommendations
-
-## Supported Chains
-
-- Ethereum
-- Polygon
-- Arbitrum
-- Optimism
-- Base
-- Binance Smart Chain (BSC)
-- zkSync Era
-- Linea
-
-## Supported Bridges
-
-- **Stargate** - 2-5 minutes (LayerZero)
-- **Wormhole** - 15-30 minutes
-- **Across** - 2-10 minutes
-- **Hop** - 5-15 minutes
+✅ **Real RPC Queries** - Direct blockchain data (no block explorer API keys needed)
+✅ **Multi-Chain Support** - Ethereum, Polygon, Arbitrum, Optimism, Base, BSC, zkSync, Linea
+✅ **Bridge Protocols** - Stargate, Wormhole, Across, Hop
+✅ **Confirmation Tracking** - Real block confirmations from live blockchain
+✅ **Health Monitoring** - Bridge contract availability checks
+✅ **Error Handling** - Comprehensive validation and error messages
 
 ## Installation
 
 ```bash
-# No external dependencies required
-python3 scripts/main.py
+# Install dependencies
+pip3 install web3
+
+# Test installation
+echo '{"action": "chains"}' | python3 scripts/main.py
 ```
 
-## Usage
+## Quick Start
 
 ### Check Transaction Status
+
+Get real transaction status from blockchain RPC:
 
 ```bash
 echo '{
   "action": "check_tx",
   "bridge": "stargate",
-  "tx_hash": "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-  "source_chain": "ethereum",
-  "dest_chain": "arbitrum"
+  "tx_hash": "0x32bf66242692f3b7cc364ada2a87354bacaf86f99bfeaefd8a78400314fcfc48",
+  "source_chain": "ethereum"
 }' | python3 scripts/main.py
+```
+
+**Real Output (Block #24398945, Ethereum):**
+
+```json
+{
+  "success": true,
+  "timestamp": "2026-02-06T16:22:06.986966+00:00",
+  "bridge": {
+    "name": "Stargate (LayerZero)",
+    "protocol": "stargate"
+  },
+  "source_transaction": {
+    "hash": "0x32bf66242692f3b7cc364ada2a87354bacaf86f99bfeaefd8a78400314fcfc48",
+    "chain": "Ethereum",
+    "status": "success",
+    "block_number": 24398945,
+    "confirmations": 2,
+    "gas_used": 21000,
+    "from": "0xae2885E0E7A6c5f99b93B4dBC43D206C7cf67c7E",
+    "to": "0xae2885E0E7A6c5f99b93B4dBC43D206C7cf67c7E",
+    "explorer_url": "https://etherscan.io/tx/0x32bf66..."
+  },
+  "bridge_status": {
+    "phase": "CONFIRMING - 2 confirmations (waiting for 10 more)",
+    "estimated_completion": "2-5 minutes",
+    "bridge_contract": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+  },
+  "next_steps": [
+    "🔗 Transaction confirming: 2/12 blocks",
+    "⏳ Wait for sufficient confirmations before bridge processes"
+  ],
+  "rpc_used": "https://eth-mainnet.public.blastapi.io"
+}
 ```
 
 ### Check Bridge Health
 
 ```bash
-echo '{
-  "action": "health",
-  "bridge": "wormhole"
-}' | python3 scripts/main.py
+echo '{"action": "health", "bridge": "stargate"}' | python3 scripts/main.py
 ```
 
-## Response Format
+### List Supported Chains
 
-### Check Transaction Response
-
-```json
-{
-  "success": true,
-  "timestamp": "2026-02-06T07:20:45.823949+00:00",
-  "bridge": "stargate",
-  "tx_hash": "0x1234567890abcdef...",
-  "source_chain": "ethereum",
-  "dest_chain": "arbitrum",
-  "source_transaction": {
-    "status": "success|pending|failed|error",
-    "block_number": 12345678,
-    "confirmed": true
-  },
-  "bridge_status": {
-    "phase": "PENDING|IN_PROGRESS|COMPLETED",
-    "estimated_completion": "2-5 minutes",
-    "explorer_url": "https://..."
-  },
-  "tracking": {
-    "check_source": "Check source tx on Etherscan",
-    "check_bridge": "Track via LayerZero Scan",
-    "check_destination": "Check destination on Arbiscan"
-  },
-  "next_steps": [
-    "Wait for source transaction confirmation",
-    "Monitor bridge progress",
-    "Check destination chain"
-  ]
-}
+```bash
+echo '{"action": "chains"}' | python3 scripts/main.py
 ```
 
-### Health Check Response
+### List Supported Bridges
 
-```json
-{
-  "bridge": "wormhole",
-  "status": "OPERATIONAL",
-  "latency": "Normal",
-  "last_incident": null,
-  "note": "Check official bridge status page for real-time updates"
-}
+```bash
+echo '{"action": "bridges"}' | python3 scripts/main.py
 ```
 
-## Parameters
+## Supported Chains
 
-### Check Transaction (`action: "check_tx"`)
+| Chain | Chain ID | RPC Provider |
+|-------|----------|--------------|
+| Ethereum | 1 | Blast API |
+| Polygon | 137 | Polygon RPC |
+| Arbitrum | 42161 | Arbitrum RPC |
+| Optimism | 10 | Optimism RPC |
+| Base | 8453 | Base RPC |
+| BSC | 56 | BSC Dataseed |
+| zkSync | 324 | zkSync Era RPC |
+| Linea | 59144 | Linea RPC |
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| action | string | yes | - | Must be "check_tx" |
-| bridge | string | yes | - | Bridge protocol (stargate, wormhole, across, hop) |
-| tx_hash | string | yes | - | Transaction hash to check |
-| source_chain | string | yes | ethereum | Source blockchain |
-| dest_chain | string | no | null | Destination blockchain |
+## Supported Bridges
 
-### Health Check (`action: "health"`)
+- **Stargate** (LayerZero): 2-5 minutes
+- **Wormhole**: 15-30 minutes
+- **Across**: 2-10 minutes
+- **Hop**: 5-15 minutes
 
-| Parameter | Type | Required | Default | Description |
-|-----------|------|----------|---------|-------------|
-| action | string | yes | - | Must be "health" |
-| bridge | string | yes | - | Bridge protocol to check |
+## API Actions
+
+### `check_tx` - Check Transaction Status
+
+Queries blockchain RPC for transaction receipt and status.
+
+**Parameters:**
+- `action` (string): "check_tx"
+- `bridge` (string): "stargate", "wormhole", "across", "hop"
+- `tx_hash` (string): Transaction hash (0x...)
+- `source_chain` (string): "ethereum", "polygon", "arbitrum", etc.
+- `dest_chain` (optional): Destination chain
+
+### `health` - Check Bridge Health
+
+Verifies bridge contract availability across chains.
+
+**Parameters:**
+- `action` (string): "health"
+- `bridge` (string): Bridge protocol name
+
+### `chains` - List Supported Chains
+
+Lists all available blockchain networks with RPC endpoints.
+
+### `bridges` - List Supported Bridges
+
+Lists all supported bridge protocols.
 
 ## Error Handling
 
-The script handles various error scenarios:
+Errors include descriptive messages:
 
-- **Invalid bridge**: Returns error for unsupported bridges
-- **Network errors**: Gracefully handles API timeouts
-- **Missing parameters**: Validates required fields
-- **Chain mismatch**: Checks if transaction hash exists on specified chain
-
-## Use Cases
-
-1. **Monitor bridge progress** - Track real-time status of cross-chain transactions
-2. **Troubleshoot stuck transactions** - Identify where transactions are failing
-3. **Monitor bridge health** - Check if bridges are operational
-4. **Automate operations** - Integrate into workflows for automated monitoring
-5. **User support** - Help users understand their bridge transaction status
-
-## API Integration
-
-The tool reads JSON from stdin and outputs JSON, making it easy to integrate with other tools:
-
-```bash
-# Pipe from another application
-some_command | python3 scripts/main.py
-
-# Store output for processing
-echo '{"action": "check_tx", ...}' | python3 scripts/main.py > result.json
+```json
+{
+  "success": false,
+  "error": "validation_error",
+  "message": "Invalid transaction hash format (expected 66 char hex with 0x prefix)"
+}
 ```
 
-## Chain Explorers Used
+## How It Works
 
-- **Etherscan** (Ethereum)
-- **Polygonscan** (Polygon)
-- **Arbiscan** (Arbitrum)
-- **Optimistic Etherscan** (Optimism)
-- **Basescan** (Base)
-- **BscScan** (BSC)
-- **zkSync Explorer** (zkSync)
-- **Lineascan** (Linea)
+### Direct RPC Architecture
 
-## Configuration
+Uses JSON-RPC calls to query blockchain directly:
 
-API keys can be set as environment variables for enhanced rate limits:
-
-```bash
-export ETHERSCAN_API_KEY="your_api_key"
-export POLYGONSCAN_API_KEY="your_api_key"
-export ARBISCAN_API_KEY="your_api_key"
-# ... etc for other chains
 ```
+eth_getTransactionReceipt → Get transaction status
+eth_getTransaction → Get transaction details
+eth_blockNumber → Get current block
+eth_getCode → Verify contract deployment
+```
+
+**No API Keys Required** - Queries public RPC endpoints.
 
 ## Dependencies
 
-- Python 3.7+
-- No external packages required (uses standard library)
-
-## License
-
-Part of the SpoonOS Skills Micro Challenge submission
+- `web3.py` >= 6.0
+- Python 3.8+
