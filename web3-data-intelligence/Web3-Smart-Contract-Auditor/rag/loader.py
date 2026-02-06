@@ -55,7 +55,13 @@ def _try_convert_github_url(url: str) -> str:
 def _load_file(path: Path) -> Optional[LoadedDoc]:
     suffix = path.suffix.lower()
     try:
-        if suffix in (".txt", ".md"):
+        # Common text and code extensions
+        text_extensions = {
+            ".txt", ".md", ".json", ".yaml", ".yml", ".csv", ".xml", ".ini", ".conf",
+            ".py", ".js", ".ts", ".go", ".rs", ".java", ".c", ".cpp", ".h", ".cs", ".php", ".rb", ".sh",
+            ".sol", ".move",  # Web3 specific
+        }
+        if suffix in text_extensions:
             # Read raw bytes first to detect BOM
             try:
                 raw_bytes = path.read_bytes()
@@ -171,7 +177,8 @@ def _load_url(url: str) -> Optional[LoadedDoc]:
         # Common pure text/code suffixes, do not need LLM Reader for cleaning
         raw_extensions = (
             ".txt", ".md", ".json", ".yaml", ".yml", ".csv", ".xml", ".ini", ".conf",
-            ".py", ".js", ".ts", ".go", ".rs", ".java", ".c", ".cpp", ".h", ".cs", ".php", ".rb", ".sh"
+            ".py", ".js", ".ts", ".go", ".rs", ".java", ".c", ".cpp", ".h", ".cs", ".php", ".rb", ".sh",
+            ".sol", ".move"
         )
         
         is_github_raw = "raw.githubusercontent.com" in target_url

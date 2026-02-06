@@ -104,9 +104,10 @@ class RAGQATool(BaseTool):
 
         qa = RagQA(config=cfg, llm=llm)
         res = await qa.answer(question, chunks)
+        from dataclasses import asdict
         return ToolResult(
             output=res.answer,
-            system=json.dumps({"citations": res.citations}, ensure_ascii=False)
+            system=json.dumps({"citations": [asdict(c) for c in res.citations]}, ensure_ascii=False)
         )
 
 
