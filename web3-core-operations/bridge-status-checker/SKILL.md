@@ -1,4 +1,9 @@
-# Bridge Status Checker (Track: web3-core-operations)
+---
+name: bridge-status-checker
+track: web3-core-operations
+version: 0.1.0
+summary: Track cross-chain bridge transactions and check completion status
+---
 
 ## Skill Overview
 
