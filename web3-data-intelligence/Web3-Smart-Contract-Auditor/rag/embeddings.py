@@ -1,0 +1,553 @@
+from __future__ import annotations
+
+import hashlib
+import json
+from abc import ABC, abstractmethod
+from typing import Dict, Iterable, List, Optional
+
+import os
+import requests
+
+
+class EmbeddingClient(ABC):
+    @abstractmethod
+    def embed(self, texts: Iterable[str]) -> List[List[float]]:
+        raise NotImplementedError
+
+
+class OpenAIEmbeddingClient(EmbeddingClient):
+    def __init__(
+        self,
+        api_key: str,
+        model: str = "text-embedding-3-small",
+        base_url: Optional[str] = None,
+        custom_headers: Optional[Dict[str, str]] = None,
+    ):
+        self.api_key = api_key
+        self.model = model
+        self.base_url = base_url or "https://api.openai.com/v1"
+        self.custom_headers = custom_headers or {}
+
+    def embed(self, texts: Iterable[str]) -> List[List[float]]:
+        url = f"{self.base_url.rstrip('/')}/embeddings"
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        if self.custom_headers:
+            headers.update(self.custom_headers)
+        
+        # OpenAI-specific limits:
+        # - Max tokens per text: 8191 (text-embedding-3-small/large)
+        # - Batch size: No hard limit, but recommended 100-1000 per batch
+        # Approximate: 1 token ≈ 4 characters
+        texts_list = list(texts)
+        max_chars = 32000  # ~8k tokens per text (conservative)
+        batch_size = 100  # Conservative batch size
+        
+        # Truncate texts that are too long
+        truncated_texts = []
+        for text in texts_list:
+            if len(text) > max_chars:
+                truncated_texts.append(text[:max_chars])
+            else:
+                truncated_texts.append(text)
+        
+        # Process in batches
+        all_embeddings = []
+        for i in range(0, len(truncated_texts), batch_size):
+            batch = truncated_texts[i:i + batch_size]
+            data = {"input": batch, "model": self.model}
+            resp = requests.post(url, headers=headers, data=json.dumps(data), timeout=60)
+            
+            if resp.status_code != 200:
+                try:
+                    error_detail = resp.json()
+                    error_msg = error_detail.get("error", {}).get("message", resp.text)
+                except:
+                    error_msg = resp.text
+                raise RuntimeError(
+                    f"OpenAI embeddings API error ({resp.status_code}): {error_msg}\n"
+                    f"Model: {self.model}, Batch size: {len(batch)}, Total texts: {len(truncated_texts)}"
+                )
+            
+            payload = resp.json()
+            all_embeddings.extend([d["embedding"] for d in payload.get("data", [])])
+        
+        return all_embeddings
+
+
+class OpenAICompatibleEmbeddingClient(EmbeddingClient):
+    def __init__(
+        self,
+        api_key: str,
+        base_url: str,
+        model: Optional[str] = None,
+        custom_headers: Optional[Dict[str, str]] = None,
+    ):
+        self.api_key = api_key
+        self.base_url = base_url.rstrip("/")
+        self.model = model
+        self.custom_headers = custom_headers or {}
+
+    def embed(self, texts: Iterable[str]) -> List[List[float]]:
+        # OpenAI-compatible; use the same /embeddings route
+        url = f"{self.base_url}/embeddings"
+        # Ensure ascii for headers
+        # Sanitize API key to remove potential hidden characters like line separator \u2028
+        clean_key = self.api_key.strip()
+        # Remove common invisible unicode characters if present
+        for char in ('\u200b', '\u2028', '\u2029'):
+            clean_key = clean_key.replace(char, '')
+            
+        safe_headers = {
+            "Authorization": f"Bearer {clean_key}",
+            "Content-Type": "application/json",
+        }
+        if self.custom_headers:
+            for k, v in self.custom_headers.items():
+                if isinstance(v, str):
+                    try:
+                        v.encode('latin-1') # http headers must be latin-1 encodable
+                        safe_headers[k] = v
+                    except UnicodeEncodeError:
+                        pass # skip non-latin-1 headers
+        
+        # OpenAI-compatible limits (conservative defaults):
+        # - Max tokens per text: varies by service, use 8k tokens as safe default
+        # - Batch size: varies by service, use 100 as safe default
+        texts_list = list(texts)
+        max_chars = 32000  # ~8k tokens per text (conservative)
+        batch_size = 100  # Conservative batch size
+        
+        # Truncate texts that are too long
+        truncated_texts = []
+        for text in texts_list:
+            if len(text) > max_chars:
+                truncated_texts.append(text[:max_chars])
+            else:
+                truncated_texts.append(text)
+        
+        # Process in batches
+        all_embeddings = []
+        for i in range(0, len(truncated_texts), batch_size):
+            batch = truncated_texts[i:i + batch_size]
+            payload = {"input": batch}
+            if self.model:
+                payload["model"] = self.model
+            resp = requests.post(url, headers=safe_headers, data=json.dumps(payload), timeout=60)
+            
+            if resp.status_code != 200:
+                try:
+                    error_detail = resp.json()
+                    error_msg = error_detail.get("error", {}).get("message", resp.text)
+                except:
+                    error_msg = resp.text
+                raise RuntimeError(
+                    f"OpenAI-compatible embeddings API error ({resp.status_code}): {error_msg}\n"
+                    f"Base URL: {self.base_url}, Batch size: {len(batch)}, Total texts: {len(truncated_texts)}"
+                )
+            
+            data = resp.json()
+            all_embeddings.extend([d["embedding"] for d in data.get("data", [])])
+        
+        return all_embeddings
+
+
+class GeminiEmbeddingClient(EmbeddingClient):
+    def __init__(
+        self,
+        api_key: str,
+        model: str,
+    ):
+        try:
+            from google import genai  # type: ignore
+        except ImportError as exc:  # pragma: no cover
+            raise ImportError(
+                "Gemini embeddings require the google-genai package to be installed."
+            ) from exc
+
+        self.client = genai.Client(api_key=api_key)
+        self.model = model
+
+    def embed(self, texts: Iterable[str]) -> List[List[float]]:
+        contents = list(texts)
+        if not contents:
+            return []
+        
+        # Gemini-specific limits:
+        # - Max tokens per text: 2048 (models/embedding-001)
+        # - Batch size: 100 requests per batch (API limit)
+        # Approximate: 1 token ≈ 4 characters
+        max_chars = 8000  # ~2k tokens per text
+        batch_size = 100  # Gemini API limit
+        
+        # Truncate texts that are too long
+        truncated_contents = []
+        for text in contents:
+            if len(text) > max_chars:
+                truncated_contents.append(text[:max_chars])
+            else:
+                truncated_contents.append(text)
+        
+        # Process in batches (Gemini has strict 100 limit)
+        all_embeddings = []
+        for i in range(0, len(truncated_contents), batch_size):
+            batch = truncated_contents[i:i + batch_size]
+            try:
+                response = self.client.models.embed_content(
+                    model=self.model,
+                    contents=batch,
+                )
+                embeddings = getattr(response, "embeddings", None) or []
+                all_embeddings.extend([e.values for e in embeddings])
+            except Exception as e:
+                raise RuntimeError(
+                    f"Gemini embeddings API error for model {self.model}: {e}\n"
+                    f"Batch size: {len(batch)}, Total texts: {len(truncated_contents)}"
+                ) from e
+        
+        return all_embeddings
+
+
+class OllamaEmbeddingClient(EmbeddingClient):
+    def __init__(
+        self,
+        *,
+        base_url: str = "http://localhost:11434",
+        model: str,
+        timeout: int = 60,
+        batch_size: int = 32,
+    ):
+        self.base_url = base_url.rstrip("/")
+        self.model = model
+        self.timeout = timeout
+        self.batch_size = max(1, int(batch_size))
+
+    def embed(self, texts: Iterable[str]) -> List[List[float]]:
+        inputs = list(texts)
+        if not inputs:
+            return []
+
+        # Preferred (batch) endpoint
+        embed_url = f"{self.base_url}/api/embed"
+        if self.batch_size > 1 and len(inputs) > self.batch_size:
+            out: List[List[float]] = []
+            for i in range(0, len(inputs), self.batch_size):
+                batch = inputs[i : i + self.batch_size]
+                resp = requests.post(
+                    embed_url,
+                    json={"model": self.model, "input": batch},
+                    timeout=self.timeout,
+                )
+                if resp.status_code == 404:
+                    out = []
+                    break
+                resp.raise_for_status()
+                payload = resp.json()
+                embeddings = payload.get("embeddings")
+                if not isinstance(embeddings, list) or len(embeddings) != len(batch):
+                    raise RuntimeError("Ollama /api/embed returned unexpected embeddings payload")
+                out.extend(embeddings)
+            if out:
+                return out
+
+        resp = requests.post(
+            embed_url,
+            json={"model": self.model, "input": inputs},
+            timeout=self.timeout,
+        )
+        if resp.status_code != 404:
+            resp.raise_for_status()
+            payload = resp.json()
+            embeddings = payload.get("embeddings")
+            if isinstance(embeddings, list):
+                return embeddings
+
+        # Fallback (legacy) endpoint: one request per input
+        # Note: Some Ollama versions may not support /api/embeddings, so we try /api/embed with single input
+        legacy_url = f"{self.base_url}/api/embed"
+        out: List[List[float]] = []
+        for text in inputs:
+            try:
+                r = requests.post(
+                    legacy_url,
+                    json={"model": self.model, "input": [text]},  # Use "input" not "prompt", and wrap in list
+                    timeout=self.timeout,
+                )
+                if r.status_code == 404:
+                    # Try old format with "prompt" and /api/embeddings
+                    old_url = f"{self.base_url}/api/embeddings"
+                    r = requests.post(
+                        old_url,
+                        json={"model": self.model, "prompt": text},
+                        timeout=self.timeout,
+                    )
+                r.raise_for_status()
+                data = r.json()
+                # Handle both response formats
+                if "embeddings" in data and isinstance(data["embeddings"], list) and len(data["embeddings"]) > 0:
+                    out.append(data["embeddings"][0])
+                elif "embedding" in data:
+                    out.append(data["embedding"])
+                else:
+                    raise RuntimeError(f"Unexpected Ollama response format: {data}")
+            except requests.exceptions.RequestException as e:
+                raise RuntimeError(
+                    f"Failed to get embeddings from Ollama at {self.base_url}. "
+                    f"Make sure Ollama is running and the model '{self.model}' is available. "
+                    f"Error: {e}"
+                ) from e
+        return out
+
+
+class HashEmbeddingClient(EmbeddingClient):
+    """Deterministic offline embedding via hashing.
+
+    Produces fixed-length vectors in [0,1] normalized range. Not semantically meaningful
+    but stable for tests and offline demos.
+    """
+
+    def __init__(self, dim: int = 256):
+        self.dim = dim
+
+    def _hash_to_vec(self, text: str) -> List[float]:
+        h = hashlib.sha256(text.encode("utf-8")).digest()
+        # Expand to required dim by repeated hashing
+        vals: List[float] = []
+        seed = h
+        while len(vals) < self.dim:
+            for b in seed:
+                vals.append(b / 255.0)
+                if len(vals) >= self.dim:
+                    break
+            seed = hashlib.sha256(seed).digest()
+        # L2 normalize
+        norm = sum(v * v for v in vals) ** 0.5 or 1.0
+        return [v / norm for v in vals]
+
+    def embed(self, texts: Iterable[str]) -> List[List[float]]:
+        return [self._hash_to_vec(t) for t in texts]
+
+
+def get_embedding_client(
+    provider: Optional[str],
+    *,
+    openai_api_key: Optional[str] = None,
+    model: Optional[str] = None,
+    openai_model: Optional[str] = None,  # Deprecated: use 'model' instead. Kept for backward compatibility.
+) -> EmbeddingClient:
+    """Create an embedding client.
+
+    Args:
+        provider: Embedding provider name ("openai", "gemini", "ollama", etc.) or None/"auto" for auto-detection.
+        openai_api_key: Optional OpenAI API key (for OpenAI provider only).
+        model: Model name/ID for the embedding provider. This is a generic parameter that works for all providers.
+        openai_model: Deprecated alias for 'model'. Use 'model' instead.
+
+    Provider selection rules:
+    - provider is None/"auto": pick the first configured embeddings provider using a dedicated
+      priority order (OpenAI > OpenRouter > Gemini).
+    - provider is "openai" / "openrouter" / "gemini" / "ollama": force that provider (uses core env config when applicable).
+    - provider is "openai_compatible": use OpenAI-compatible embeddings via RAG_EMBEDDINGS_* env vars.
+    - otherwise: deterministic hash embeddings (offline).
+    """
+    # Handle backward compatibility: if openai_model is provided but model is not, use openai_model
+    if model is None and openai_model is not None:
+        model = openai_model
+    # Note: We don't set a default model here. Each provider handles None appropriately:
+    # - OpenAI: uses OpenAIEmbeddingClient's default "text-embedding-3-small"
+    # - Gemini: uses "models/embedding-001" (see line 339)
+    # - OpenRouter: uses _derive_openrouter_embedding_model which returns "openai/text-embedding-3-small"
+    # - Ollama: auto-detects embedding models or defaults to "nomic-embed-text"
+    # - openai_compatible: custom OpenAI-compatible embeddings endpoint
+    # - DeepSeek: NOT SUPPORTED (specializes in LLM/text generation, not embeddings)
+    #   Use DeepSeek as LLM for QA generation, and other models for embeddings
+
+    def _normalize(value: Optional[str]) -> str:
+        return (value or "").strip().lower()
+
+    def _derive_openrouter_embedding_model(base_model: str) -> str:
+        base_model = (base_model or "").strip()
+        if not base_model:
+            return "openai/text-embedding-3-small"
+        # OpenRouter uses namespaced model IDs (e.g. openai/text-embedding-3-small)
+        if "/" in base_model:
+            return base_model
+        return f"openai/{base_model}"
+
+    provider_norm = _normalize(provider)
+
+    if provider_norm in ("", "auto"):
+        # Auto: pick the first configured embeddings provider using a dedicated priority
+        # order (OpenAI > OpenRouter > Gemini). This is intentionally independent from
+        # the chat LLM provider and its fallback chain.
+        # Note: DeepSeek does not support embeddings API, so it's excluded from auto-selection.
+        
+        if os.getenv("OPENAI_API_KEY"):
+            provider_norm = "openai"
+        elif os.getenv("OPENROUTER_API_KEY"):
+            provider_norm = "openrouter"
+        elif os.getenv("GEMINI_API_KEY"):
+            provider_norm = "gemini"
+            
+        # Finally, allow a custom OpenAI-compatible embeddings endpoint if explicitly configured.
+        if provider_norm in ("", "auto") and os.getenv("RAG_EMBEDDINGS_BASE_URL"):
+             provider_norm = "openai_compatible"
+
+    supported = {"", "auto", "hash", "openai", "openrouter", "gemini", "openai_compatible", "ollama"}
+    if provider_norm not in supported:
+        raise ValueError(
+            f"Unsupported embeddings provider '{provider_norm}'. "
+            "Supported: auto, openai, openrouter, gemini, openai_compatible, ollama, hash. "
+            "Note: DeepSeek does not support embeddings API."
+        )
+
+    if provider_norm == "hash":
+        return HashEmbeddingClient()
+
+    if provider_norm == "openai":
+        # Use simple env vars to avoid dependency on spoon_ai.llm
+        key = openai_api_key or os.getenv("OPENAI_API_KEY")
+        base_url = os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1"
+
+        if not key:
+            raise ValueError("OPENAI_API_KEY not configured for OpenAI embeddings")
+
+        # Allow passing OpenRouter-style namespaced IDs (e.g. openai/text-embedding-3-small)
+        # while keeping OpenAI's expected model id (text-embedding-3-small).
+        model_name = model.split("/", 1)[-1] if "/" in (model or "") else model
+        return OpenAIEmbeddingClient(api_key=key, model=model_name, base_url=base_url)
+
+    if provider_norm == "openrouter":
+        # OpenRouter is OpenAI-compatible for embeddings.
+        api_key = os.getenv("OPENROUTER_API_KEY")
+        base_url = os.getenv("OPENROUTER_BASE_URL") or "https://openrouter.ai/api/v1"
+        
+        # If OPENROUTER_MODEL is an embedding model, use it; otherwise default to OpenAI embeddings via OpenRouter.
+        # Check env var for model override
+        env_model = os.getenv("OPENROUTER_MODEL")
+        if env_model and "embedding" in env_model.lower():
+            model_name = env_model
+        else:
+            model_name = _derive_openrouter_embedding_model(model)
+
+        if not api_key:
+            raise ValueError("OPENROUTER_API_KEY not configured for OpenRouter embeddings")
+
+        return OpenAICompatibleEmbeddingClient(
+            api_key=api_key,
+            base_url=base_url,
+            model=model_name,
+            custom_headers={"HTTP-Referer": "https://spoon.ai", "X-Title": "SpoonAI"},
+        )
+
+    if provider_norm == "gemini":
+        # Gemini embeddings are handled via google-genai SDK. The embedding model must be
+        # provided via RAG_EMBEDDINGS_MODEL (passed as model parameter here).
+        api_key = os.getenv("GEMINI_API_KEY")
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY not configured for Gemini embeddings")
+
+        model_name = (model or "").strip()
+        # If model is empty or is OpenAI's default model name, use Gemini's default
+        # if not model_name or model_name == "text-embedding-3-small":
+        if not model_name:
+            # Use Gemini's embedding model. embedding-001 is the standard Gemini embedding model
+            model_name = "models/embedding-001"
+        
+        # Ensure model has 'models/' prefix if not already present
+        if not model_name.startswith("models/"):
+            model_name = f"models/{model_name}"
+
+        return GeminiEmbeddingClient(api_key=cfg.api_key, model=model_name)
+
+    if provider_norm == "openai_compatible":
+        # Custom OpenAI-compatible embeddings endpoint configured via:
+        # - RAG_EMBEDDINGS_API_KEY
+        # - RAG_EMBEDDINGS_BASE_URL
+        # - RAG_EMBEDDINGS_MODEL (optional; defaults to model parameter)
+        
+        api_key = os.getenv("RAG_EMBEDDINGS_API_KEY")
+        base_url = os.getenv("RAG_EMBEDDINGS_BASE_URL")
+        
+        if not base_url:
+            raise ValueError(
+                "RAG_EMBEDDINGS_BASE_URL must be set when RAG_EMBEDDINGS_PROVIDER=openai_compatible."
+            )
+
+        model_name = os.getenv("RAG_EMBEDDINGS_MODEL") or model
+        return OpenAICompatibleEmbeddingClient(
+            api_key=api_key or "dummy",
+            base_url=base_url,
+            model=model_name,
+        )
+
+    if provider_norm == "deepseek":
+        # DeepSeek specializes in LLM (text generation), not embeddings
+        # For embeddings, use specialized models like OpenAI, OpenRouter, Gemini, Ollama, or openai_compatible
+        # DeepSeek can still be used as LLM for QA generation (see RagQA)
+        raise ValueError(
+            "DeepSeek does not support embeddings API (it specializes in LLM/text generation). "
+            "For embeddings, use specialized models: 'openai', 'openrouter', 'gemini', 'ollama', "
+            "or 'openai_compatible'. "
+            "DeepSeek can still be used as the LLM for answer generation in RagQA."
+        )
+
+    if provider_norm == "ollama":
+        # Clean base_url: strip whitespace and remove surrounding quotes if present
+        base_url_raw = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434").strip()
+        # Remove surrounding quotes (single or double) if present
+        if (base_url_raw.startswith('"') and base_url_raw.endswith('"')) or \
+           (base_url_raw.startswith("'") and base_url_raw.endswith("'")):
+            base_url = base_url_raw[1:-1].strip()
+        else:
+            base_url = base_url_raw
+        base_url = base_url or "http://localhost:11434"
+        model_name = (model or "").strip()
+        
+        # Warn if using a non-embedding model (common mistake)
+        if model_name:
+            model_lower = model_name.lower()
+            # Common LLM models that are NOT embedding models
+            llm_models = ["llama", "mistral", "gemma", "phi", "qwen", "deepseek", "chat", "instruct"]
+            if any(llm in model_lower for llm in llm_models) and "embed" not in model_lower:
+                import warnings
+                warnings.warn(
+                    f"Warning: '{model_name}' appears to be an LLM model, not an embedding model. "
+                    f"For Ollama embeddings, use models like 'nomic-embed-text', 'mxbai-embed-large', etc. "
+                    f"Run 'ollama pull nomic-embed-text' to install an embedding model.",
+                    UserWarning
+                )
+        
+        if not model_name:
+            # Try to auto-detect embedding model from Ollama
+            try:
+                resp = requests.get(f"{base_url.rstrip('/')}/api/tags", timeout=5)
+                resp.raise_for_status()
+                data = resp.json()
+                models = []
+                for m in data.get("models", []) or []:
+                    name = m.get("name") or m.get("model")
+                    if name:
+                        models.append(str(name))
+                
+                # Prefer obvious embedding models
+                for name in models:
+                    lowered = name.lower()
+                    if "embed" in lowered or "embedding" in lowered:
+                        model_name = name
+                        break
+                
+                # Fallback to common default: nomic-embed-text
+                if not model_name:
+                    model_name = "nomic-embed-text"  # Common Ollama embedding model
+            except Exception:
+                # If auto-detection fails, use common default
+                model_name = "nomic-embed-text"
+        
+        return OllamaEmbeddingClient(base_url=base_url, model=model_name)
+
+    # Default deterministic offline embedding
+    return HashEmbeddingClient()
+
