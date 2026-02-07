@@ -1,117 +1,70 @@
-# AI-Enhanced Productivity Skills
+# email-ses-sender (Track: ai-productivity)
 
-**Track Focus:** AI-powered automation for modern development workflows - API integrations, cloud services, and intelligent tooling.
+Send templated emails via AWS SES with support for HTML rendering, attachments, and bulk delivery
 
-**Status**: Open for contributions! See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines.
+## Overview
 
-## Available Skills
+This skill enables sending formatted emails through AWS Simple Email Service (SES). It supports HTML templates with variable substitution, CC/BCC recipients, attachments, and delivery tracking. Perfect for transactional emails, notifications, and automated communications.
 
-| Skill | Description | Status | Scripts |
-|-------|-------------|--------|---------|
-| [API Integration](./api-integration/) | REST, GraphQL, webhooks, OAuth | 🔵 Accepting PRs | 0 |
-| [Database](./database/) | SQL, NoSQL, vector DBs | 🔵 Accepting PRs | 0 |
-| [Messaging](./messaging/) | Slack, Discord, Email, SMS | 🔵 Accepting PRs | 0 |
-| [Cloud Services](./cloud-services/) | AWS, GCP, Azure | 🔵 Accepting PRs | 0 |
-| [Monitoring](./monitoring/) | Prometheus, Grafana, alerts | 🔵 Accepting PRs | 0 |
-| [Storage](./storage/) | S3, GCS, file management | 🔵 Accepting PRs | 0 |
+## Features
 
-### Status Legend
+- **AWS SES Integration**: Direct integration with AWS SES for reliable delivery
+- **Template Support**: Render HTML templates with variable substitution
+- **Rich Formatting**: Support for HTML emails with inline CSS
+- **Attachments**: Include file attachments in emails
+- **Bulk Send**: Send to multiple recipients efficiently
+- **Delivery Tracking**: Get delivery status and bounce information
+- **Custom Headers**: Add custom email headers
+- **Sandbox Mode**: Test emails in AWS SES sandbox
 
-- 🟢 **Complete**: Production-ready with full documentation
-- 🔵 **Accepting PRs**: Open for contributions
-- 🔴 **WIP**: Work in progress
+## Use Cases
 
-## Track Description
+- Send password reset emails with verification links
+- Deliver transaction receipts and order confirmations
+- Send daily/weekly digest emails to users
+- Notify team members of important events
+- Generate automated reports and send via email
+- User signup confirmation and onboarding emails
 
-AI-Enhanced Productivity focuses on building intelligent automation that amplifies developer capabilities:
-
-- **Smart API Orchestration**: Chain API calls with intelligent error handling
-- **Cloud Automation**: Infrastructure as code, deployment pipelines
-- **Data Operations**: Database queries, migrations, vector search
-- **Communication**: Automated notifications, alerts, reports
-- **Observability**: Metrics collection, anomaly detection, dashboards
-
-## Why "AI-Enhanced"?
-
-These aren't just API wrappers. The goal is to create skills that:
-
-1. **Understand Context**: Know when to retry, escalate, or adapt
-2. **Chain Operations**: Combine multiple services intelligently
-3. **Handle Failures**: Graceful degradation and recovery
-4. **Learn Patterns**: Optimize based on usage patterns
-
-## Getting Started
-
-```python
-from spoon_ai.agents import SpoonReactSkill
-
-agent = SpoonReactSkill(
-    name="productivity_agent",
-    skill_paths=["./ai-productivity"],
-    scripts_enabled=True
-)
-
-# Example: "Send a Slack alert when the API response time exceeds 500ms"
-response = await agent.run("Send a Slack alert when API response time exceeds 500ms")
-```
-
-**Or with Claude Code:**
+## Quickstart
 ```bash
-# Copy skills to your workspace
-cp -r ai-productivity/ .claude/skills/
+python3 scripts/main.py --help
 ```
 
-## Skill Ideas (Welcome Contributions!)
+## Example
+```bash
+python3 scripts/main.py --demo
+```
 
-### API Integration
-- OpenAPI/Swagger client generator
-- GraphQL query builder with caching
-- Webhook handlers with retry logic
-- Rate limiting & intelligent backoff
-- API response caching
+## Parameters
 
-### Database
-- PostgreSQL operations with query optimization
-- MongoDB aggregation pipelines
-- Redis caching patterns
-- Pinecone/Weaviate vector search
-- Database migrations with rollback
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| from_address | string | Yes | Sender email address (must be verified in SES) |
+| to_addresses | array | Yes | Array of recipient email addresses |
+| subject | string | Yes | Email subject line |
+| body_html | string | Yes | HTML body content |
+| body_text | string | No | Plain text fallback body |
+| template_name | string | No | SES template name to use |
+| template_data | object | No | Variables for template rendering |
+| cc_addresses | array | No | CC recipient addresses |
+| bcc_addresses | array | No | BCC recipient addresses |
+| attachments | array | No | Array of attachment objects |
+| configuration_set | string | No | SES configuration set for tracking |
 
-### Messaging
-- Slack bot with context awareness
-- Discord notifications with threading
-- Email via SendGrid/Mailgun
-- SMS via Twilio with fallback
-- Push notifications (FCM/APNs)
+## Example Output
 
-### Cloud Services
-- AWS Lambda deployment automation
-- S3 operations with multipart upload
-- GCP Cloud Functions
-- Azure Functions
-- Terraform/Pulumi automation
-
-### Monitoring
-- Prometheus metrics collection
-- Grafana dashboard generation
-- PagerDuty/OpsGenie alerts
-- Log aggregation and analysis
-- Health checks with auto-remediation
-
-### Storage
-- File upload/download with progress
-- Image processing and optimization
-- PDF generation from templates
-- Archive management (zip/tar)
-- CDN integration and cache invalidation
-
-## Challenge Track: AI-Enhanced Productivity
-
-**Goal:** Build skills that make AI agents genuinely productive in real-world workflows.
-
-**High-Value Submissions:**
-- Intelligent CI/CD pipeline manager
-- Multi-cloud resource optimizer
-- Automated incident response system
-- Smart notification router (priority-based)
-- Database migration assistant with rollback
+```json
+{
+  "ok": true,
+  "data": {
+    "message_id": "0000014d-95ad-4c41-b6b8-3e0836dc9d6d-000000",
+    "from": "noreply@example.com",
+    "to": ["user@example.com"],
+    "subject": "Welcome to Our Service",
+    "status": "sent",
+    "timestamp": "2026-02-07T10:15:30Z",
+    "body_preview": "Hello user@example.com, Welcome to our platform...",
+    "headers_sent": 12
+  }
+}
