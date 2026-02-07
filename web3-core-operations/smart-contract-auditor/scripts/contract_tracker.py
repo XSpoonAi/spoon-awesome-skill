@@ -1,20 +1,68 @@
 #!/usr/bin/env python3
 """
 Contract Tracker Module
-Tracks and monitors smart contract interactions over time.
+Tracks and monitors smart contract interactions using real blockchain data.
 """
 
 import json
+import requests
+import os
 from typing import Dict, List, Optional, Any
 from datetime import datetime, timedelta
 
 class ContractTracker:
-    """Tracks and analyzes smart contract interactions."""
+    """Tracks and analyzes smart contract interactions using real blockchain data."""
     
     def __init__(self):
+        self.etherscan_api_key = os.getenv("ETHERSCAN_API_KEY", "")
+        self.etherscan_url = "https://api.etherscan.io/api"
         self.contract_profiles = {}
         self.interaction_history = []
         self.alerts = []
+    
+    def get_contract_interactions(self, address: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """
+        Fetch real contract interactions from blockchain.
+        
+        Args:
+            address: Contract address
+            limit: Maximum transactions to fetch
+            
+        Returns:
+            List of real transactions
+        """
+        try:
+            params = {
+                "module": "account",
+                "action": "txlist",
+                "address": address,
+                "startblock": 0,
+                "endblock": 99999999,
+                "sort": "desc",
+                "apikey": self.etherscan_api_key
+            }
+            response = requests.get(self.etherscan_url, params=params, timeout=10)
+            data = response.json()
+            
+            if data.get("status") == "1":
+                transactions = data.get("result", [])[:limit]
+                return [
+                    {
+                        "hash": tx.get("hash"),
+                        "from": tx.get("from"),
+                        "to": tx.get("to"),
+                        "value": int(tx.get("value", 0)) / 1e18,
+                        "gas": int(tx.get("gas", 0)),
+                        "gasUsed": int(tx.get("gasUsed", 0)),
+                        "blockNumber": int(tx.get("blockNumber", 0)),
+                        "timestamp": int(tx.get("timeStamp", 0))
+                    }
+                    for tx in transactions
+                ]
+        except Exception as e:
+            print(f"Error fetching interactions: {e}")
+        
+        return []
     
     def track_interaction(self, interaction: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -266,61 +314,51 @@ class ContractTracker:
         
         return report
 
-
-# Example execution
+# Example execution with real blockchain data
 if __name__ == "__main__":
     tracker = ContractTracker()
+    
+    print("=" * 60)
+    print("FETCHING REAL CONTRACT INTERACTIONS")
+    print("=" * 60)
+    
+    # Analyze real USDC contract
+    test_contract = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+    
+    interactions = tracker.get_contract_interactions(test_contract, limit=10)
+    
+    print(f"Found {len(interactions)} real interactions\n")
     
     print("=" * 60)
     print("CONTRACT TRACKING")
     print("=" * 60)
     
-    # Track some interactions
-    interactions = [
-        {
-            "contract": "0x1234567890abcdef1234567890abcdef12345678",
-            "sender": "0xabcd1234",
+    for interaction in interactions[:3]:
+        result = tracker.track_interaction({
+            "contract": test_contract,
+            "sender": interaction.get("from"),
             "function": "0xa9059cbb",
-            "value": 50
-        },
-        {
-            "contract": "0x1234567890abcdef1234567890abcdef12345678",
-            "sender": "0xabcd1234",
-            "function": "0xa9059cbb",
-            "value": 45
-        },
-        {
-            "contract": "0x1234567890abcdef1234567890abcdef12345678",
-            "sender": "0xabcd1234",
-            "function": "0xa9059cbb",
-            "value": 55
-        }
-    ]
-    
-    for interaction in interactions:
-        result = tracker.track_interaction(interaction)
+            "value": interaction.get("value")
+        })
         print(f"Tracked: {result['interaction_id']}")
     
-    # Get profile
     print("\n" + "=" * 60)
     print("CONTRACT PROFILE")
     print("=" * 60)
     
-    profile = tracker.get_contract_profile("0x1234567890abcdef1234567890abcdef12345678")
+    profile = tracker.get_contract_profile(test_contract)
     print(json.dumps(profile, indent=2))
     
-    # Detect anomalies
     print("\n" + "=" * 60)
     print("ANOMALY DETECTION")
     print("=" * 60)
     
-    anomalies = tracker.detect_anomalies("0x1234567890abcdef1234567890abcdef12345678")
+    anomalies = tracker.detect_anomalies(test_contract)
     print(json.dumps(anomalies, indent=2))
     
-    # Generate report
     print("\n" + "=" * 60)
     print("MONITORING REPORT")
     print("=" * 60)
     
-    report = tracker.generate_report("0x1234567890abcdef1234567890abcdef12345678")
+    report = tracker.generate_report(test_contract)
     print(json.dumps(report, indent=2, default=str))

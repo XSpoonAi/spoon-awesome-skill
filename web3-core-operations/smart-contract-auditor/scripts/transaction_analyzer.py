@@ -5,13 +5,18 @@ Analyzes blockchain transactions for safety, patterns, and anomalies.
 """
 
 import json
+import requests
+import os
 from typing import Dict, List, Optional, Any
 from datetime import datetime
 
 class TransactionAnalyzer:
-    """Analyzes transactions for safety, efficiency, and patterns."""
+    """Analyzes transactions for safety, efficiency, and patterns using real blockchain data."""
     
     def __init__(self):
+        self.etherscan_api_key = os.getenv("ETHERSCAN_API_KEY", "")
+        self.etherscan_url = "https://api.etherscan.io/api"
+        
         self.gas_price_thresholds = {
             "low": 20,      # Gwei
             "normal": 50,
@@ -23,6 +28,63 @@ class TransactionAnalyzer:
             "sandwich_attack": {"rapid_sequence": True, "same_function": True},
             "flash_loan": {"large_value": True, "repaid_same_block": True}
         }
+    
+    def get_transaction_by_hash(self, tx_hash: str) -> Optional[Dict[str, Any]]:
+        """
+        Fetch real transaction data from blockchain using Etherscan API.
+        
+        Args:
+            tx_hash: Transaction hash
+            
+        Returns:
+            Transaction data or None if not found
+        """
+        try:
+            params = {
+                "module": "proxy",
+                "action": "eth_getTransactionByHash",
+                "txhash": tx_hash,
+                "apikey": self.etherscan_api_key
+            }
+            response = requests.get(self.etherscan_url, params=params, timeout=10)
+            data = response.json()
+            return data.get("result")
+        except Exception as e:
+            print(f"Error fetching transaction: {e}")
+        return None
+    
+    def get_recent_transactions(self, address: str = None) -> List[Dict[str, Any]]:
+        """
+        Get real recent transactions from Etherscan.
+        
+        Args:
+            address: Ethereum address (optional)
+            
+        Returns:
+            List of recent transactions
+        """
+        try:
+            if not address:
+                address = "0x68b3465833fb72B5A828cCEEf89B9d26a3bB09b0"  # Uniswap Router
+            
+            params = {
+                "module": "account",
+                "action": "txlist",
+                "address": address,
+                "startblock": 0,
+                "endblock": 99999999,
+                "sort": "desc",
+                "apikey": self.etherscan_api_key
+            }
+            response = requests.get(self.etherscan_url, params=params, timeout=10)
+            data = response.json()
+            
+            if data.get("status") == "1":
+                return data.get("result", [])[:10]
+        except Exception as e:
+            print(f"Error fetching transactions: {e}")
+        
+        return []
     
     def analyze_transaction(self, tx_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -204,33 +266,53 @@ class TransactionAnalyzer:
             return "CRITICAL"
 
 
-# Example execution
+# Example execution with real blockchain data
 if __name__ == "__main__":
     analyzer = TransactionAnalyzer()
     
-    # Test single transaction
-    test_tx = {
-        "hash": "0x1234567890abcdef",
-        "from": "0xAbcD...1234",
-        "to": "0x1234...abcd",
-        "value": 50,  # 50 ETH
-        "gasPrice": 80e9,  # 80 Gwei
-        "gas": 150000,
-        "data": "0xa9059cbb000000"  # Transfer signature
-    }
+    print("=" * 60)
+    print("FETCHING REAL TRANSACTION DATA")
+    print("=" * 60)
     
-    result = analyzer.analyze_transaction(test_tx)
+    # Get recent real transactions
+    recent_txs = analyzer.get_recent_transactions()
+    
+    print(f"Found {len(recent_txs)} recent transactions\n")
+    
+    # Analyze first real transaction
+    test_tx = recent_txs[0]
+    result = analyzer.analyze_transaction({
+        "hash": test_tx.get("hash"),
+        "from": test_tx.get("from"),
+        "to": test_tx.get("to"),
+        "value": int(test_tx.get("value", 0)) / 1e18,
+        "gasPrice": int(test_tx.get("gasPrice", 0)),
+        "gas": int(test_tx.get("gas", 0)),
+        "data": test_tx.get("input", "0x")
+    })
     
     print("=" * 60)
-    print("TRANSACTION ANALYSIS")
+    print("REAL TRANSACTION ANALYSIS")
     print("=" * 60)
     print(json.dumps(result, indent=2))
     
-    # Test transaction sequence
-    print("\n" + "=" * 60)
-    print("SEQUENCE ANALYSIS")
-    print("=" * 60)
-    
-    test_sequence = [test_tx] * 5
-    sequence_result = analyzer.analyze_transaction_sequence(test_sequence)
-    print(json.dumps(sequence_result, indent=2))
+    # Analyze sequence of real transactions
+    if len(recent_txs) > 1:
+        print("\n" + "=" * 60)
+        print("REAL SEQUENCE ANALYSIS")
+        print("=" * 60)
+        
+        sequence_txs = []
+        for tx in recent_txs[:5]:
+            sequence_txs.append({
+                "hash": tx.get("hash"),
+                "from": tx.get("from"),
+                "to": tx.get("to"),
+                "value": int(tx.get("value", 0)) / 1e18,
+                "gasPrice": int(tx.get("gasPrice", 0)),
+                "gas": int(tx.get("gas", 0)),
+                "data": tx.get("input", "0x")
+            })
+        
+        sequence_result = analyzer.analyze_transaction_sequence(sequence_txs)
+        print(json.dumps(sequence_result, indent=2))

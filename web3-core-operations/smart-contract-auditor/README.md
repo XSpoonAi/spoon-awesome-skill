@@ -38,11 +38,11 @@ analyzer = TransactionAnalyzer()
 
 # Analyze single transaction
 result = analyzer.analyze_transaction({
-    "from": "0xAbcD...",
-    "to": "0x1234...",
+    "from": "0x1111111254fb6c44bac0bed2854e76f90643097d",
+    "to": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     "value": 50,
     "gasPrice": 80e9,
-    "data": "0xa9059cbb..."
+    "data": "0xa9059cbb"
 })
 # Returns: safety_score, risk_level, recommendations
 ```
@@ -78,7 +78,7 @@ validator = FunctionValidator()
 
 # Validate function call
 result = validator.validate_function_call(
-    "0x1234...",
+    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     "0x095ea7b3",  # approve function
     {"amount": "unlimited"}
 )
@@ -125,8 +125,8 @@ optimizer = GasOptimizer()
 
 # Estimate gas cost
 estimate = optimizer.estimate_gas_cost("token_transfer", {
-    "data": "0xa9059cbb...",
-    "to": "0x1234..."
+    "data": "0xa9059cbb",
+    "to": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 })
 # Returns: gas_estimate, cost_analysis at different gas prices
 
@@ -176,10 +176,10 @@ scorer = RiskScorer()
 
 # Score contract
 contract_risk = scorer.score_contract({
-    "address": "0x1234...",
-    "age_days": 180,
-    "is_audited": False,
-    "tvl_millions": 50,
+    "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "age_days": 1460,
+    "is_audited": True,
+    "tvl_millions": 2500,
     "is_upgradeable": False,
     "function_count": 15
 })
@@ -187,8 +187,8 @@ contract_risk = scorer.score_contract({
 
 # Score interaction
 interaction_risk = scorer.score_interaction(
-    "0xabcd...",
-    "0x1234...",
+    "0x1111111254fb6c44bac0bed2854e76f90643097d",
+    "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
     "0x095ea7b3",
     {"value": 150}
 )
@@ -240,22 +240,22 @@ tracker = ContractTracker()
 
 # Track interaction
 tracker.track_interaction({
-    "contract": "0x1234...",
-    "sender": "0xabcd...",
+    "contract": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    "sender": "0x1111111254fb6c44bac0bed2854e76f90643097d",
     "function": "0xa9059cbb",
     "value": 50
 })
 
 # Get contract profile
-profile = tracker.get_contract_profile("0x1234...")
+profile = tracker.get_contract_profile("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
 # Returns: interactions, functions, senders, total_value, patterns
 
 # Detect anomalies
-anomalies = tracker.detect_anomalies("0x1234...", window_hours=24)
+anomalies = tracker.detect_anomalies("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", window_hours=24)
 # Returns: detected_anomalies, anomaly_score, recommendations
 
 # Generate report
-report = tracker.generate_report("0x1234...")
+report = tracker.generate_report("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
 # Returns: profile, anomalies, alerts, recommendations
 ```
 
@@ -276,7 +276,7 @@ report = tracker.generate_report("0x1234...")
 **Output:**
 ```json
 {
-  "contract": "0x1234...",
+  "contract": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
   "total_interactions": 3,
   "unique_functions": 1,
   "unique_senders": 1,
@@ -382,11 +382,11 @@ optimizer = GasOptimizer()
 
 # Collection of swaps
 swaps = [
-    {"to": "0xSwapRouter", "data": "0x414bf389...", "gas": 150000},
-    {"to": "0xSwapRouter", "data": "0x414bf389...", "gas": 150000},
-    {"to": "0xSwapRouter", "data": "0x414bf389...", "gas": 150000},
-    {"to": "0xSwapRouter", "data": "0x414bf389...", "gas": 150000},
-    {"to": "0xSwapRouter", "data": "0x414bf389...", "gas": 150000}
+    {"to": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "data": "0x414bf389", "gas": 150000},
+    {"to": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "data": "0x414bf389", "gas": 150000},
+    {"to": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "data": "0x414bf389", "gas": 150000},
+    {"to": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "data": "0x414bf389", "gas": 150000},
+    {"to": "0xE592427A0AEce92De3Edee1F18E0157C05861564", "data": "0x414bf389", "gas": 150000}
 ]
 
 # Optimize
