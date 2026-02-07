@@ -113,7 +113,8 @@ def parse_yaml_frontmatter(content: str) -> dict:
     """Parse YAML frontmatter from SKILL.md content.
 
     Handles nested structures (parameters, triggers, scripts) with
-    indentation-based parsing. Supports lists with '- ' prefix.
+    indentation-based parsing. Supports both list ('- ' prefix) and
+    mapping ('key: value') sub-structures.
     """
     parts = content.split("---", 2)
     if len(parts) < 3:
@@ -124,6 +125,10 @@ def parse_yaml_frontmatter(content: str) -> dict:
     current_key: Optional[str] = None
     current_list: Optional[list] = None
     current_dict: Optional[dict] = None
+    # Track whether the top-level value is a mapping (dict) vs list
+    current_is_mapping: bool = False
+    # Track the top-level mapping dict separately from list-item dicts
+    top_mapping: Optional[dict] = None
 
     for line in yaml_text.split("\n"):
         stripped = line.strip()
@@ -136,15 +141,60 @@ def parse_yaml_frontmatter(content: str) -> dict:
         if indent == 0 and ":" in stripped:
             current_list = None
             current_dict = None
+            current_is_mapping = False
+            top_mapping = None
             key, _, val = stripped.partition(":")
             key = key.strip()
             val = val.strip()
             if val:
                 result[key] = _parse_yaml_value(val)
             else:
-                result[key] = []
+                # Defer type decision — will be resolved on first nested line
+                result[key] = None
                 current_key = key
-                current_list = result[key]
+            continue
+
+        # We have a nested line under current_key — decide list vs mapping
+        if current_key and result.get(current_key) is None:
+            if stripped.startswith("- "):
+                result[current_key] = []
+                current_list = result[current_key]
+                current_is_mapping = False
+            else:
+                result[current_key] = {}
+                top_mapping = result[current_key]
+                current_dict = top_mapping
+                current_is_mapping = True
+
+        # Nested key: value inside a list-item dict (highest priority)
+        if (
+            ":" in stripped
+            and not stripped.startswith("- ")
+            and current_dict is not None
+            and current_dict is not top_mapping
+            and isinstance(current_dict, dict)
+        ):
+            k, _, v = stripped.partition(":")
+            k = k.strip()
+            v = v.strip()
+            current_dict[k] = _parse_yaml_value(v) if v else []
+            continue
+
+        # Mapping value under a top-level mapping key
+        if (
+            current_is_mapping
+            and current_key
+            and ":" in stripped
+            and not stripped.startswith("- ")
+            and top_mapping is not None
+        ):
+            k, _, v = stripped.partition(":")
+            k = k.strip()
+            v = v.strip()
+            top_mapping[k] = _parse_yaml_value(v) if v else []
+            # If value is a list placeholder, prepare for list items
+            if not v:
+                current_list = top_mapping[k] if isinstance(top_mapping[k], list) else None
             continue
 
         # List item
@@ -162,15 +212,7 @@ def parse_yaml_frontmatter(content: str) -> dict:
                     current_dict = None
             continue
 
-        # Nested key: value inside a dict
-        if ":" in stripped and current_dict is not None:
-            k, _, v = stripped.partition(":")
-            k = k.strip()
-            v = v.strip()
-            current_dict[k] = _parse_yaml_value(v) if v else []
-            continue
-
-        # Sub-structure of top-level list item
+        # Sub-structure of top-level list item (fallback)
         if ":" in stripped and indent > 0 and current_key:
             k, _, v = stripped.partition(":")
             k = k.strip()
@@ -199,7 +241,10 @@ def extract_keywords_from_triggers(triggers: list[dict]) -> tuple[str, ...]:
 
 
 def extract_script_names(scripts_data: dict | list) -> tuple[str, ...]:
-    """Extract script names from scripts definition."""
+    """Extract script names from scripts definition.
+
+    Handles both dict format (scripts.definitions) and flat list format.
+    """
     if isinstance(scripts_data, dict):
         defs = scripts_data.get("definitions", [])
         if isinstance(defs, list):
@@ -207,6 +252,12 @@ def extract_script_names(scripts_data: dict | list) -> tuple[str, ...]:
                 d.get("name", "") for d in defs
                 if isinstance(d, dict) and d.get("name")
             )
+    # Fallback: flat list of dicts with 'name' key
+    if isinstance(scripts_data, list):
+        return tuple(
+            d.get("name", "") for d in scripts_data
+            if isinstance(d, dict) and d.get("name")
+        )
     return ()
 
 
