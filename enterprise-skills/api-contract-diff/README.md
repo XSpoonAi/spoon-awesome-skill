@@ -1,32 +1,74 @@
-## Skill Overview
+# api-contract-diff (Track: enterprise-skills)
 
-This skill is part of the SpoonOS Skills Micro Challenge submission, providing production-ready functionality with comprehensive error handling and JSON-based I/O.
+Detect breaking and non-breaking changes between OpenAPI/Swagger specifications
+
+## Overview
+
+This skill compares two API contract versions and identifies all changes, categorizing them by impact level. It detects removed endpoints, new methods, parameter changes, and response schema modifications to help prevent breaking changes in production.
 
 ## Features
 
-- ✅ Full business logic implementation
-- ✅ Demo mode with realistic sample data
-- ✅ JSON parameter input validation
-- ✅ Comprehensive error handling
-- ✅ Self-contained and executable
+- **Breaking Change Detection**: Identify endpoints and methods that were removed
+- **Non-Breaking Changes**: Track additions and optional parameter updates
+- **Comprehensive Diff**: Compare full OpenAPI schemas including paths, methods, and parameters
+- **Impact Assessment**: Categorize changes by severity for API consumers
+- **JSON Output**: Structured format for integration with CI/CD pipelines
 
-## Usage
+## Use Cases
 
-### Demo Mode
+- Validate API changes before deployment
+- Prevent unintended breaking changes to public APIs
+- Document API evolution and compatibility
+- Enforce API versioning policies
+- Generate API changelog from contract changes
+
+## Quickstart
 ```bash
-python scripts/main.py --demo
+python3 scripts/main.py --help
 ```
 
-### With Parameters
+## Example
 ```bash
-python scripts/main.py --params '{"key": "value"}'
+python3 scripts/main.py --demo
 ```
 
-## Testing
+## Parameters
 
-This skill has been fully tested and validated for production use. Testing was performed using SpoonReactSkill and other skill-enabled agents like Claude Code.
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| schema1 | object | Yes | First OpenAPI specification |
+| schema2 | object | Yes | Second OpenAPI specification (reference) |
+| format | string | No | Output format (json, summary) - default: json |
 
-### Demo Output
-```
-{"ok": true, "data": {"demo": true, "schema_type": "openapi", "diff": {"breaking_changes": [{"type": "removed_endpoint", "path": "/posts"}], "non_breaking_changes": [], "additions": [{"type": "new_endpoint", "path": "/comments"}, {"type": "new_method", "path": "/users", "method": "delete"}]}}}
+## Example Output
+
+```json
+{
+  "ok": true,
+  "data": {
+    "breaking_changes": [
+      {
+        "type": "removed_endpoint",
+        "path": "/posts"
+      },
+      {
+        "type": "removed_method",
+        "path": "/users",
+        "method": "put"
+      }
+    ],
+    "non_breaking_changes": [],
+    "additions": [
+      {
+        "type": "new_endpoint",
+        "path": "/comments"
+      },
+      {
+        "type": "new_method",
+        "path": "/users",
+        "method": "delete"
+      }
+    ]
+  }
+}
 ```
