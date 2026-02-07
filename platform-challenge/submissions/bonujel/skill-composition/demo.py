@@ -27,13 +27,14 @@ from typing import Any
 # Resolve project paths
 # ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent.parent.parent  # → spoon-awesome-skill/
+PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent.parent  # → spoon-awesome-skill/
 
-# Ensure scripts/ is importable
+# Ensure scripts/ is importable (both package-level and sibling imports)
 sys.path.insert(0, str(SCRIPT_DIR))
+sys.path.insert(0, str(SCRIPT_DIR / "scripts"))
 
-from skill_discovery import run_skill_discovery  # noqa: E402
-from workflow_composer import run_workflow_composer  # noqa: E402
+from scripts.skill_discovery import run_skill_discovery  # noqa: E402
+from scripts.workflow_composer import run_workflow_composer  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # ANSI colour helpers (no external deps)
