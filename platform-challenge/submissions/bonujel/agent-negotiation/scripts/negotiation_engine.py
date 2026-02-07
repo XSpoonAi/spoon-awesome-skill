@@ -296,7 +296,10 @@ async def buyer_decide(state: NegotiationState) -> dict[str, Any]:
     round_num = state.get("current_round", 1)
     budget = state["buyer_budget"]
     seller_prop = state["seller_proposal"]
-    offer_ceiling = budget * (1 + CONCESSION_RATE_BUYER * round_num)
+    # Acceptance ceiling: same concession base as buyer_propose (round_num - 1)
+    # plus a half-step tolerance so the buyer accepts slightly above their own offer
+    # without jumping a full concession round ahead.
+    offer_ceiling = budget * (1 + CONCESSION_RATE_BUYER * (round_num - 0.5))
 
     context = (
         f"Round {round_num}/{state.get('max_rounds', MAX_NEGOTIATION_ROUNDS)}.\n"
@@ -346,11 +349,15 @@ async def settle(state: NegotiationState) -> dict[str, Any]:
     agreed_price = float(last_entry.get("price", 0))
     agreed_sla = last_entry.get("sla_tier", "standard")
 
+    # Use the round recorded in the last history entry to avoid off-by-one
+    # from current_round being incremented before routing to settle.
+    actual_round = last_entry.get("round", state.get("current_round", 1))
+
     result = {
         "status": NegotiationStatus.AGREED.value,
         "agreed_price": agreed_price,
         "agreed_sla": agreed_sla,
-        "rounds_taken": state.get("current_round", 1),
+        "rounds_taken": actual_round,
         "buyer_initial": state["buyer_budget"],
         "seller_initial": state["seller_base_price"],
     }
