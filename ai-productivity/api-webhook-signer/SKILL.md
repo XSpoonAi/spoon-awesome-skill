@@ -2,74 +2,71 @@
 name: api-webhook-signer
 track: ai-productivity
 version: 0.1.0
-summary: Generate/verify signed webhooks with HMAC-SHA256 and retry queue with exponential backoff
+summary: Generate and verify HMAC-SHA256 signed webhooks
 ---
 
 ## Description
 
-Generate HMAC-SHA256 signatures for webhook payloads and verify incoming webhook signatures. Includes retry queue generation with configurable exponential backoff for reliable webhook delivery.
+Generate and verify HMAC-SHA256 signed webhooks with retry queue and exponential backoff. Provides secure webhook signing and validation for API integrations.
 
 ## Inputs
-
-JSON parameters via `--params`:
 
 ```json
 {
   "action": "sign|verify",
-  "payload": {"event": "user.created", "user_id": 123},
-  "secret": "your_secret_key",
-  "signature": "signature_to_verify (for verify action)",
-  "retry_config": {
-    "max_attempts": 3,
-    "base_delay": 1,
-    "backoff_multiplier": 2
-  }
+  "payload": "Webhook payload",
+  "secret": "HMAC secret key",
+  "signature": "Signature to verify (for verify action)"
 }
 ```
 
 ## Outputs
 
-JSON to stdout:
-
-**Sign action:**
 ```json
 {
   "ok": true,
   "data": {
-    "action": "sign",
-    "signature": "hmac_sha256_hex",
-    "payload": {...},
-    "retry_queue": [
-      {"attempt": 1, "delay_seconds": 1, "next_retry": "2026-02-06T10:00:01Z"}
-    ]
-  }
-}
-```
-
-**Verify action:**
-```json
-{
-  "ok": true,
-  "data": {
-    "action": "verify",
-    "valid": true,
-    "payload": {...}
+    "signature": "Generated signature",
+    "valid": true
   }
 }
 ```
 
 ## Usage
 
+### Demo Mode
 ```bash
-# Demo mode
 python scripts/main.py --demo
+```
 
-# Sign a webhook
-python scripts/main.py --params '{"action":"sign","payload":{"event":"test"},"secret":"key123"}'
+### Sign Webhook
+```bash
+echo '{"action":"sign","payload":{"event":"user.created"},"secret":"my_secret"}' | python3 scripts/main.py
+```
 
-# Verify a webhook
-python scripts/main.py --params '{"action":"verify","payload":{"event":"test"},"secret":"key123","signature":"abc..."}'
+## Examples
 
-# Sign with retry queue
-python scripts/main.py --params '{"action":"sign","payload":{"event":"test"},"secret":"key123","retry_config":{"max_attempts":5}}'
+### Example 1: Sign Webhook
+```bash
+$ echo '{"action":"sign","payload":{"event":"user.created","user_id":123},"secret":"my_secret"}' | python3 scripts/main.py
+{
+  "ok": true,
+  "data": {
+    "signature": "sha256=abc123def456..."
+  }
+}
+```
+
+## Error Handling
+
+When an error occurs, the skill returns:
+
+```json
+{
+  "ok": false,
+  "error": "Error description",
+  "details": {
+    "secret": "Secret key is required"
+  }
+}
 ```
