@@ -380,8 +380,8 @@ def aggregate_consensus(input_data: dict) -> dict:
     # Step 2: Cluster findings
     clusters = cluster_findings(votes)
 
-    # Step 3: Build agreement map
-    agreement = build_agreement_map(clusters, len(agent_results))
+    # Step 3: Build agreement map (use valid vote count, not total agents)
+    agreement = build_agreement_map(clusters, len(votes))
 
     # Step 4: Run consensus mode
     mode_fn = CONSENSUS_MODES.get(consensus_mode, consensus_majority)

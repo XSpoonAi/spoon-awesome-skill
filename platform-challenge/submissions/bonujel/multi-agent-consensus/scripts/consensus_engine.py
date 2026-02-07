@@ -18,6 +18,7 @@ SpoonOS Integration:
 
 import asyncio
 import json
+import re
 import sys
 import os
 import time
@@ -423,9 +424,10 @@ def parse_agent_response(raw_content: str) -> dict:
     findings: list[str] = []
 
     lower = raw_content.lower()
-    if any(w in lower for w in ["safe", "secure", "no issues", "no vulnerabilities"]):
-        verdict = "SAFE"
-        confidence = 0.7
+    # Check explicit negative forms FIRST to prevent "unsafe" matching "safe"
+    if any(w in lower for w in ["unsafe", "insecure", "not safe", "not secure"]):
+        verdict = "CRITICAL_RISK"
+        confidence = 0.75
     elif any(w in lower for w in ["critical", "high risk", "vulnerable", "exploit"]):
         verdict = "CRITICAL_RISK"
         confidence = 0.8
@@ -435,6 +437,9 @@ def parse_agent_response(raw_content: str) -> dict:
     elif any(w in lower for w in ["low risk", "minor", "informational"]):
         verdict = "LOW_RISK"
         confidence = 0.65
+    elif re.search(r"\bsafe\b|\bsecure\b|no issues|no vulnerabilities", lower):
+        verdict = "SAFE"
+        confidence = 0.7
 
     # Extract bullet-point findings
     for line in raw_content.split("\n"):
