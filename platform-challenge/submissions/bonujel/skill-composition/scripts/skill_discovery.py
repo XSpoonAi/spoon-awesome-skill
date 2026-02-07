@@ -27,29 +27,9 @@ from enum import Enum
 from pathlib import Path
 from typing import Optional
 
+from _llm_client import extract_json, llm_chat, load_env
 
-# ---------------------------------------------------------------------------
-# .env File Loader (stdlib only, no python-dotenv needed)
-# ---------------------------------------------------------------------------
-
-def _load_dotenv() -> None:
-    """Load .env file from the project directory into os.environ."""
-    env_path = Path(__file__).resolve().parent.parent / ".env"
-    if not env_path.exists():
-        return
-    with open(env_path, "r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line or line.startswith("#") or "=" not in line:
-                continue
-            key, _, value = line.partition("=")
-            key = key.strip()
-            value = value.strip().strip("'\"")
-            if key and value:
-                os.environ.setdefault(key, value)
-
-
-_load_dotenv()
+load_env()
 
 
 # ---------------------------------------------------------------------------
@@ -356,29 +336,8 @@ def tag_match_score(query: str, skill: SkillMetadata) -> tuple[float, list[str]]
 
 
 # ---------------------------------------------------------------------------
-# Layer 3: LLM Semantic Matching
+# Layer 3: LLM Semantic Matching (via shared _llm_client)
 # ---------------------------------------------------------------------------
-
-async def _http_post(url: str, headers: dict, payload: dict) -> dict:
-    """Async HTTP POST using asyncio-compatible urllib."""
-    import urllib.request
-    import urllib.error
-
-    data = json.dumps(payload).encode("utf-8")
-    req = urllib.request.Request(url, data=data, headers=headers, method="POST")
-
-    loop = asyncio.get_event_loop()
-    try:
-        response = await loop.run_in_executor(
-            None,
-            lambda: urllib.request.urlopen(req, timeout=30),
-        )
-        return json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        body = e.read().decode("utf-8") if e.fp else ""
-        return {"error": f"HTTP {e.code}: {body}"}
-    except Exception as e:
-        return {"error": str(e)}
 
 
 async def llm_semantic_match(
@@ -391,25 +350,15 @@ async def llm_semantic_match(
     This is the expensive but most accurate matching layer.
     Only called for candidates that passed keyword/tag filters.
 
-    In production SpoonOS, this delegates to LLMManager:
-        from spoon_ai.llm import LLMManager
-        response = await llm_manager.chat(messages, provider=provider)
+    Delegates to SpoonOS LLMManager when available, falls back to HTTP.
     """
     if not candidates:
         return []
 
-    api_key_map = {
-        "openai": ("OPENAI_API_KEY", "https://api.openai.com/v1/chat/completions", "gpt-4o-mini"),
-        "anthropic": ("ANTHROPIC_API_KEY", "https://api.anthropic.com/v1/messages", "claude-sonnet-4-20250514"),
-        "deepseek": ("DEEPSEEK_API_KEY", "https://api.deepseek.com/v1/chat/completions", "deepseek-chat"),
-    }
-
-    provider_info = api_key_map.get(provider, api_key_map["openai"])
-    api_key = os.getenv(provider_info[0], "")
-
-    if not api_key:
-        # Fallback: return keyword scores without LLM enhancement
-        return [{"skill_name": c.name, "relevance": 0.5, "reasoning": "No API key for LLM matching"} for c in candidates]
+    fallback = [
+        {"skill_name": c.name, "relevance": 0.5, "reasoning": "LLM unavailable"}
+        for c in candidates
+    ]
 
     skill_summaries = "\n".join(
         f"- **{c.name}**: {c.description[:200]} (tags: {', '.join(c.tags[:5])})"
@@ -435,58 +384,22 @@ Rate each skill's relevance. Respond in this exact JSON format:
 ]
 ```"""
 
-    if provider == "anthropic":
-        headers = {
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-            "Content-Type": "application/json",
-        }
-        payload = {
-            "model": provider_info[2],
-            "max_tokens": 1024,
-            "system": system_prompt,
-            "messages": [{"role": "user", "content": user_prompt}],
-        }
-    else:
-        headers = {
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-        }
-        payload = {
-            "model": provider_info[2],
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": user_prompt},
-            ],
-            "temperature": 0.1,
-            "max_tokens": 1024,
-        }
+    response = await llm_chat(
+        messages=[{"role": "user", "content": user_prompt}],
+        provider=provider,
+        system=system_prompt,
+        temperature=0.1,
+        max_tokens=1024,
+    )
 
-    resp = await _http_post(provider_info[1], headers, payload)
+    if not response:
+        return fallback
 
-    if resp.get("error"):
-        return [{"skill_name": c.name, "relevance": 0.5, "reasoning": f"LLM error: {resp['error']}"} for c in candidates]
+    parsed = extract_json(response)
+    if isinstance(parsed, list):
+        return parsed
 
-    # Extract content based on provider
-    if provider == "anthropic":
-        content = ""
-        for block in resp.get("content", []):
-            if block.get("type") == "text":
-                content += block.get("text", "")
-    else:
-        content = resp.get("choices", [{}])[0].get("message", {}).get("content", "")
-
-    # Parse JSON from response
-    try:
-        if "```json" in content:
-            json_str = content.split("```json")[1].split("```")[0].strip()
-            return json.loads(json_str)
-        if content.strip().startswith("["):
-            return json.loads(content.strip())
-    except (json.JSONDecodeError, IndexError):
-        pass
-
-    return [{"skill_name": c.name, "relevance": 0.5, "reasoning": "Failed to parse LLM response"} for c in candidates]
+    return fallback
 
 
 # ---------------------------------------------------------------------------

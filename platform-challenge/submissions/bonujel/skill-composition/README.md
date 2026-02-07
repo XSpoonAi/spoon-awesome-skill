@@ -40,10 +40,11 @@ Inspired by **Unix pipes** and **microservice orchestration**, this skill automa
 
 ## Architecture
 
-### Two-Script Pipeline
+### Three-Script Architecture
 
 | Script | Role | SpoonOS Mapping |
 |--------|------|-----------------|
+| `_llm_client.py` | Shared LLM client (SpoonOS LLMManager + HTTP fallback) | LLM abstraction layer |
 | `skill_discovery.py` | Parse SKILL.md metadata + semantic intent matching | `graph.add_node("discover", ...)` |
 | `workflow_composer.py` | Dependency analysis + StateGraph DAG generation | `graph.add_node("compose", ...)` |
 
@@ -175,11 +176,12 @@ graph.add_edge("compose", "__end__")
 
 | Principle | Implementation |
 |-----------|---------------|
-| **Zero external deps** | Pure Python 3.10+ stdlib (no PyYAML, no requests) |
+| **SpoonOS native** | Integrates LLMManager with stdlib HTTP fallback (three-level degradation) |
 | **Immutable state** | All domain types use `@dataclass(frozen=True)` |
 | **Composable I/O** | stdin/stdout JSON protocol, Unix pipe compatible |
-| **Graceful degradation** | LLM unavailable → falls back to heuristic matching |
+| **Graceful degradation** | SpoonOS → HTTP fallback → heuristic-only matching |
 | **Multi-provider** | OpenAI, Anthropic, DeepSeek — auto-detect from env |
+| **DRY** | Shared `_llm_client.py` eliminates duplicate LLM code |
 
 ## File Structure
 
@@ -188,8 +190,9 @@ skill-composition/
 ├── SKILL.md                    # Skill metadata + cognitive framework
 ├── README.md                   # This file
 ├── scripts/
-│   ├── skill_discovery.py      # Three-layer skill matching (685 lines)
-│   └── workflow_composer.py    # StateGraph DAG generation (876 lines)
+│   ├── _llm_client.py         # Shared LLM client (SpoonOS + HTTP fallback)
+│   ├── skill_discovery.py      # Three-layer skill matching
+│   └── workflow_composer.py    # StateGraph DAG generation
 └── references/
     └── script-api.md           # Script I/O specification
 ```

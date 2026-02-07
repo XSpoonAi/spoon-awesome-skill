@@ -70,6 +70,7 @@ prerequisites:
   optional_env_vars:
     - ANTHROPIC_API_KEY
     - DEEPSEEK_API_KEY
+    - DASHSCOPE_API_KEY
   skills: []
 composable: true
 persist_state: true
@@ -103,7 +104,7 @@ You are an expert **Skill Composition Architect** specializing in automatic work
 | SpoonOS APIs | `StateGraph`, `MCP Tool Discovery`, Skill Marketplace |
 | Min Skills | 2 (meaningful composition) |
 | Max Skills | 10 (complexity ceiling) |
-| Matching Strategy | YAML metadata parsing + LLM semantic intent matching |
+| Matching Strategy | YAML metadata parsing + SpoonOS LLMManager semantic matching |
 | Key Innovation | Skills become composable building blocks, not isolated tools |
 
 ## Cognitive Framework: Three-Layer Composition
@@ -203,6 +204,7 @@ Every composition result MUST follow this structure:
 
 | Script | Purpose | Timeout |
 |--------|---------|---------|
+| `_llm_client` | Shared LLM client (SpoonOS LLMManager + HTTP fallback) | — |
 | `skill_discovery` | Parse SKILL.md metadata + semantic intent matching | 60s |
 | `workflow_composer` | Generate StateGraph workflow from matched skills | 30s |
 
@@ -215,6 +217,76 @@ Every composition result MUST follow this structure:
 - `{{max_skills}}`: Maximum skills to compose
 - `{{execution_mode}}`: auto, sequential, parallel, mixed
 - `{{provider}}`: LLM provider for semantic matching
+
+## Reasoning Trace Template
+
+For complex composition tasks, output a structured reasoning trace:
+
+```
+### Reasoning Trace
+
+**Entry Point**: [signal type] → [entry layer] → [initial skill]
+
+**Forward Trace ↓** (Intent → Sub-tasks → Skills):
++-- User Intent: "{query}"
+|       ↓ decompose
++-- Sub-task 1: [description] → Skill: [name] (score: X.XX)
+|       ↓ data-flow
++-- Sub-task 2: [description] → Skill: [name] (score: X.XX)
+|       ↓ aggregate
++-- Final Output: [StateGraph definition]
+
+**Backward Trace ↑** (Verify composition correctness):
++-- Output contract: Does the graph produce the expected result?
+|       ↑
++-- Dependency check: Are all data-flow edges valid?
+|       ↑
++-- Coverage check: Does the skill set cover the full intent?
+
+**Attempt Log**:
+| # | Method | Result | Learning |
+|---|--------|--------|----------|
+| 1 | [approach] | [outcome] | [insight] |
+```
+
+## Metacognition Layer
+
+Before finalizing any composition, perform these self-checks:
+
+### Pre-Composition Checks
+- **Intent completeness**: Does the query decomposition cover all aspects?
+- **Skill sufficiency**: Are the matched skills adequate, or are critical gaps present?
+- **Over-composition risk**: Am I composing more skills than necessary?
+
+### Post-Composition Checks
+- **Graph validity**: Is the StateGraph a valid DAG (no cycles, proper entry/exit)?
+- **Data-flow coherence**: Do skill outputs actually match downstream inputs?
+- **Strategy appropriateness**: Is the chosen strategy (pipeline/parallel/mixed) optimal?
+- **Confidence calibration**: Does the confidence score reflect actual composition quality?
+
+### Reflection Prompt
+> "I have composed {{skill_count}} skills into a {{strategy}} workflow.
+> Before returning, I verify: (1) no unnecessary skills included,
+> (2) all dependencies are real data-flow relationships,
+> (3) the execution mode matches the dependency structure."
+
+## Tool Priority (PREFER Directives)
+
+- PREFER `skill_discovery` script over manual SKILL.md parsing for skill matching
+- PREFER `workflow_composer` script over hand-crafted StateGraph definitions
+- PREFER SpoonOS LLMManager over direct HTTP API calls for LLM interactions
+- PREFER tag-based heuristic matching as first pass before LLM semantic matching
+- PREFER immutable dataclass patterns over mutable dict manipulation
+- PREFER stdin/stdout JSON protocol over file-based I/O for script communication
+
+## Pressure Scenarios (Skills TDD)
+
+See `references/pressure-scenarios.md` for 5 structured test scenarios covering:
+1. Multi-domain pipeline detection
+2. Independent parallel analysis
+3. Single skill (no composition)
+4. Graceful empty results
+5. LLM-unavailable degradation
 
 ## Documentation Completeness Check
 
@@ -229,5 +301,9 @@ Before responding, verify this skill's documentation covers:
 - [ ] Composition Strategies for each execution pattern
 - [ ] Script interfaces (skill_discovery, workflow_composer) with I/O specs
 - [ ] Context variables listed and explained
+- [ ] Reasoning Trace Template for structured output
+- [ ] Metacognition Layer with pre/post checks
+- [ ] PREFER directives for tool priority
+- [ ] Pressure Scenarios (Skills TDD) referenced
 
 If any item is missing, flag it in the response before proceeding.

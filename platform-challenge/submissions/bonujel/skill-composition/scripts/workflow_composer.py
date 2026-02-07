@@ -17,43 +17,27 @@ Composition Strategies:
 stdin/stdout JSON protocol (SpoonOS compatible):
     echo '{"matches": [...], "execution_mode": "auto"}' | python workflow_composer.py
 
-Dependencies: Python 3.10+ stdlib only (no external packages).
+Dependencies: Python 3.10+, _llm_client.py (shared LLM module).
 """
 
 from __future__ import annotations
 
 import asyncio
 import json
-import os
-import ssl
 import sys
 import time
-import urllib.request
 from dataclasses import dataclass, field
 from enum import Enum
-from pathlib import Path
 from typing import Any, FrozenSet, Tuple
+
+from _llm_client import extract_json, llm_chat, load_env
 
 
 # ---------------------------------------------------------------------------
 # Environment bootstrap
 # ---------------------------------------------------------------------------
 
-def _load_dotenv() -> None:
-    """Load .env file from script directory or parent (best-effort)."""
-    for candidate in (Path(__file__).parent, Path(__file__).parent.parent):
-        env_file = candidate / ".env"
-        if env_file.is_file():
-            for line in env_file.read_text(encoding="utf-8").splitlines():
-                line = line.strip()
-                if not line or line.startswith("#") or "=" not in line:
-                    continue
-                key, _, value = line.partition("=")
-                os.environ.setdefault(key.strip(), value.strip().strip("\"'"))
-            break
-
-
-_load_dotenv()
+load_env()
 
 
 # ---------------------------------------------------------------------------
@@ -145,76 +129,6 @@ class CompositionResult:
     elapsed_ms: int
     error: str = ""
 
-
-# ---------------------------------------------------------------------------
-# LLM Helper (multi-provider, stdlib only)
-# ---------------------------------------------------------------------------
-
-_SSL_CTX = ssl.create_default_context()
-
-_PROVIDER_CONFIG: dict[str, dict[str, str]] = {
-    "openai": {
-        "url": "https://api.openai.com/v1/chat/completions",
-        "key_env": "OPENAI_API_KEY",
-        "model": "gpt-4o-mini",
-    },
-    "anthropic": {
-        "url": "https://api.anthropic.com/v1/messages",
-        "key_env": "ANTHROPIC_API_KEY",
-        "model": "claude-sonnet-4-20250514",
-    },
-    "deepseek": {
-        "url": "https://api.deepseek.com/v1/chat/completions",
-        "key_env": "DEEPSEEK_API_KEY",
-        "model": "deepseek-chat",
-    },
-}
-
-
-async def _llm_request(prompt: str, provider: str = "openai") -> str:
-    """Send a prompt to the configured LLM provider and return the response."""
-    cfg = _PROVIDER_CONFIG.get(provider, _PROVIDER_CONFIG["openai"])
-    api_key = os.environ.get(cfg["key_env"], "")
-    if not api_key:
-        return ""
-
-    if provider == "anthropic":
-        payload = json.dumps({
-            "model": cfg["model"],
-            "max_tokens": 2048,
-            "messages": [{"role": "user", "content": prompt}],
-        }).encode()
-        headers = {
-            "Content-Type": "application/json",
-            "x-api-key": api_key,
-            "anthropic-version": "2023-06-01",
-        }
-    else:
-        payload = json.dumps({
-            "model": cfg["model"],
-            "messages": [
-                {"role": "system", "content": "You are a workflow composition expert."},
-                {"role": "user", "content": prompt},
-            ],
-            "temperature": 0.2,
-            "max_tokens": 2048,
-        }).encode()
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
-
-    req = urllib.request.Request(cfg["url"], data=payload, headers=headers)
-
-    def _do_request() -> str:
-        with urllib.request.urlopen(req, context=_SSL_CTX, timeout=25) as resp:
-            data = json.loads(resp.read().decode())
-        if provider == "anthropic":
-            return data.get("content", [{}])[0].get("text", "")
-        return data.get("choices", [{}])[0].get("message", {}).get("content", "")
-
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(None, _do_request)
 
 
 # ---------------------------------------------------------------------------
@@ -346,38 +260,35 @@ async def analyze_dependencies_llm(
         skills_json=skills_desc, query=query
     )
 
-    raw = await _llm_request(prompt, provider)
+    raw = await llm_chat(
+        messages=[{"role": "user", "content": prompt}],
+        provider=provider,
+        system="You are a workflow composition expert.",
+        temperature=0.2,
+        max_tokens=2048,
+    )
     if not raw:
         return []
 
-    # Parse LLM response
-    try:
-        # Strip markdown fences if present
-        cleaned = raw.strip()
-        if cleaned.startswith("```"):
-            cleaned = cleaned.split("\n", 1)[1]
-        if cleaned.endswith("```"):
-            cleaned = cleaned.rsplit("```", 1)[0]
-        cleaned = cleaned.strip()
-
-        data = json.loads(cleaned)
-        deps: list[DependencyInfo] = []
-        valid_ids = {n.node_id for n in nodes}
-
-        for dep in data.get("dependencies", []):
-            src = dep.get("source", "")
-            tgt = dep.get("target", "")
-            if src in valid_ids and tgt in valid_ids and src != tgt:
-                deps.append(DependencyInfo(
-                    source_skill=src,
-                    target_skill=tgt,
-                    dependency_type=dep.get("type", "data_flow"),
-                    confidence=min(1.0, max(0.0, float(dep.get("confidence", 0.5)))),
-                    reasoning=dep.get("reasoning", ""),
-                ))
-        return deps
-    except (json.JSONDecodeError, KeyError, ValueError):
+    data = extract_json(raw)
+    if not isinstance(data, dict):
         return []
+
+    deps: list[DependencyInfo] = []
+    valid_ids = {n.node_id for n in nodes}
+
+    for dep in data.get("dependencies", []):
+        src = dep.get("source", "")
+        tgt = dep.get("target", "")
+        if src in valid_ids and tgt in valid_ids and src != tgt:
+            deps.append(DependencyInfo(
+                source_skill=src,
+                target_skill=tgt,
+                dependency_type=dep.get("type", "data_flow"),
+                confidence=min(1.0, max(0.0, float(dep.get("confidence", 0.5)))),
+                reasoning=dep.get("reasoning", ""),
+            ))
+    return deps
 
 
 # ---------------------------------------------------------------------------
