@@ -1,32 +1,96 @@
-## Skill Overview
+# skill-ci-checklist (Track: platform-challenge)
 
-This skill is part of the SpoonOS Skills Micro Challenge submission, providing production-ready functionality with comprehensive error handling and JSON-based I/O.
+Validate skill quality and CI/CD readiness against quality gates
+
+## Overview
+
+This skill performs comprehensive validation of skill implementations checking documentation, code structure, Python syntax, and required functionality. It ensures all skills meet quality standards before deployment.
 
 ## Features
 
-- ✅ Full business logic implementation
-- ✅ Demo mode with realistic sample data
-- ✅ JSON parameter input validation
-- ✅ Comprehensive error handling
-- ✅ Self-contained and executable
+- **Structure Validation**: Check required files (SKILL.md, README.md, main.py, pull.md)
+- **Documentation Analysis**: Validate sections, length, and completeness
+- **YAML Validation**: Verify SKILL.md frontmatter contains required metadata
+- **Code Quality**: Check Python syntax, imports, and functionality
+- **Quality Scoring**: Calculate overall quality score (0-100)
+- **Severity Classification**: Grade issues as critical, high, medium, or low
+- **Actionable Recommendations**: Provide specific improvements needed
 
 ## Usage
 
-### Demo Mode
+Validate a skill directory to ensure it meets all CI/CD quality gates and requirements:
+
 ```bash
-python scripts/main.py --demo
+# Validate skill with explicit path
+python3 scripts/main.py skill-ci-checklist
+
+# Run in demo mode (validates itself)
+python3 scripts/main.py --demo
+
+# Check skill with custom parameters
+python3 scripts/main.py --params '{"skill_path": "path/to/skill"}'
 ```
 
-### With Parameters
+The skill checks:
+- All required files exist (SKILL.md, README.md, scripts/main.py, pull.md)
+- README contains required sections (Overview, Features, Use Cases, Parameters, Example Output)
+- SKILL.md contains required YAML fields (name, track, version, summary)
+- Python code has valid syntax and required handlers (argparse, demo, params, error handling)
+- Documentation shows minimum quality (246+ words)
+
+## Use Cases
+
+- Pre-merge quality gates for skill submissions
+- Validate skill consistency across repository
+- Identify documentation gaps
+- Ensure code structure compliance
+- Generate quality reports for skill authors
+
+## Quickstart
 ```bash
-python scripts/main.py --params '{"key": "value"}'
+python3 scripts/main.py --help
 ```
 
-## Testing
-
-This skill has been fully tested and validated for production use. Testing was performed using SpoonReactSkill and other skill-enabled agents like Claude Code.
-
-### Demo Output
+## Example
+```bash
+python3 scripts/main.py --demo
 ```
-{"ok": true, "data": {"demo": true, "checklist": {"skill": "api-webhook-signer", "track": "ai-productivity", "checks": [{"category": "Structure", "items": [{"check": "SKILL.md exists", "required": true}, {"check": "README.md exists", "required": true}, {"check": "scripts/main.py exists", "required": true}, {"check": "YAML frontmatter valid", "required": true}]}, {"category": "Functionality", "items": [{"check": "--demo mode works", "required": true}, {"check": "--params mode works", "required": true}, {"check": "JSON output valid", "required": true}, {"check": "Error handling present", "required": true}]}, {"category": "Documentation", "items": [{"check": "Usage examples provided", "required": true}, {"check": "Input/output documented", "required": true}, {"check": "Description clear", "required": true}]}, {"category": "Code Quality", "items": [{"check": "No syntax errors", "required": true}, {"check": "Proper imports", "required": true}, {"check": "Error messages helpful", "required": false}]}]}, "total_checks": 14}}
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| skill_path | string | Yes | Path to skill directory to validate |
+| skill_name | string | No | Name of the skill being validated |
+
+## Example Output
+
+```json
+{
+  "ok": true,
+  "data": {
+    "skill": "skill-ci-checklist",
+    "timestamp": "2026-02-07T09:12:00",
+    "metrics": {
+      "total_checks": 24,
+      "passed": 22,
+      "failed": 0,
+      "warnings": 2,
+      "quality_score": 91.7,
+      "status": "excellent"
+    },
+    "checks_by_severity": {
+      "critical": 4,
+      "high": 8,
+      "medium": 6,
+      "low": 6
+    },
+    "critical_issues": [],
+    "recommendations": [
+      "All quality gates passed",
+      "Consider expanding usage examples"
+    ]
+  }
+}
 ```
+
