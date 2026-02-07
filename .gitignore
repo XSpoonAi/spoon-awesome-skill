@@ -1,0 +1,4 @@
+.serena/
+.env
+__pycache__/
+*.pyc
