@@ -46,14 +46,29 @@ echo '{"to":"user@example.com","subject":"Hello","template":"welcome"}' | python
 
 ## Examples
 
-### Example 1: Send Welcome Email
+### Example 1: Send Email to test@sambitsargam.in
 ```bash
-$ echo '{"to":"user@example.com","subject":"Welcome!","template":"welcome","variables":{"name":"John"}}' | python3 scripts/main.py
+$ echo '{"to":"test@sambitsargam.in","subject":"Test Email","template":"notification","variables":{"message":"This is a test email"}}' | python3 scripts/main.py
 {
   "ok": true,
   "data": {
-    "message_id": "0000014a-aee4-4a01-a640-a8f7f5bd5e7e-000000",
-    "status": "sent"
+    "message_id": "0000014a-aee4-4a01-a640-a8f7f5bd5e7e-000001",
+    "status": "sent",
+    "recipient": "test@sambitsargam.in",
+    "timestamp": "2026-02-07T10:15:30Z"
+  }
+```
+
+### Example 2: Send Email to sambitsargam2003@gmail.com
+```bash
+$ echo '{"to":"sambitsargam2003@gmail.com","subject":"Important Update","template":"alert","variables":{"alert_type":"system","severity":"high"}}' | python3 scripts/main.py
+{
+  "ok": true,
+  "data": {
+    "message_id": "0000014a-aee4-4a01-a640-a8f7f5bd5e7e-000001",
+    "status": "sent",
+    "recipient": "sambitsargam2003@gmail.com",
+    "timestamp": "2026-02-07T10:15:35Z"
   }
 }
 ```
