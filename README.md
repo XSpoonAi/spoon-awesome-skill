@@ -12,7 +12,7 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 |-----------------|--------|--------|-------|
 | [Web3 Data Intelligence](./web3-data-intelligence/) | 2 | 🔵 Open for Submissions | On-chain analysis & insights |
 | [Web3 Core Operations](./web3-core-operations/) | 9 | 🔵 Open for Submissions | Smart contracts & protocols |
-| [AI-Enhanced Productivity](./ai-productivity/) | 6 | 🔵 Open for Submissions | API & automation |
+| [AI-Enhanced Productivity](./ai-productivity/) | 7 | 🔵 Open for Submissions | API & automation |
 | [Enterprise & Team Skills](./enterprise-skills/) | 6 | 🔵 Open for Submissions | Code quality & collaboration |
 | [Platform Challenge](./platform-challenge/) | - | 🆕 Meta Track | Skill routing & coverage |
 
@@ -84,6 +84,7 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 | [Cloud Services](./ai-productivity/cloud-services/) | AWS, GCP, Azure | 🔵 Accepting PRs |
 | [Monitoring](./ai-productivity/monitoring/) | Prometheus, Grafana | 🔵 Accepting PRs |
 | [Storage](./ai-productivity/storage/) | S3, GCS, files | 🔵 Accepting PRs |
+| [Caption Translation](./ai-productivity/caption-translation/) | Subtitle localization and bilingual output (From ETHPanda) | 🔵 Accepting PRs |
 
 **Challenge:** Build skills that make AI agents genuinely productive in real-world workflows.
 

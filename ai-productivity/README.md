@@ -14,6 +14,7 @@
 | [Cloud Services](./cloud-services/) | AWS, GCP, Azure | 🔵 Accepting PRs | 0 |
 | [Monitoring](./monitoring/) | Prometheus, Grafana, alerts | 🔵 Accepting PRs | 0 |
 | [Storage](./storage/) | S3, GCS, file management | 🔵 Accepting PRs | 0 |
+| [Caption Translation](./caption-translation/) | Subtitle localization and bilingual captions (From ETHPanda) | 🔵 Accepting PRs | 0 |
 
 ### Status Legend
 
