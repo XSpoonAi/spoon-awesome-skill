@@ -109,7 +109,7 @@ scripts:
       timeout: 30
       requires_auth: false
       confidence: 85%
-
+---
 capabilities:
   - python code smell detection (god functions, long parameters, deep nesting, etc.)
   - solidity smart contract anti-patterns (reentrancy, unchecked arithmetic, etc.)
