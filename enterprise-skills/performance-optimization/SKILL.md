@@ -111,6 +111,8 @@ scripts:
       requires_auth: false
       confidence: 89%
 
+---
+
 outputs:
   - type: metrics
     format: json
@@ -159,3 +161,4 @@ notes: |
   - Generate actionable optimization recommendations
   
   All 4 modules are production-ready with 90%+ confidence and integrate seamlessly with other enterprise skills.
+---
