@@ -33,16 +33,16 @@ class FastKOLAgent(SpoonReactMCP):
                 })
 
         try:
-            await update_status("热点采集", "running")
+            await update_status("Market Snapshot", "running")
             markets = await self.polymarket.execute(limit=3)
             result["stages"]["market_data"] = markets
-            await update_status("热点采集", "completed", data=markets)
-            await update_status("内容策划", "running")
+            await update_status("Market Snapshot", "completed", data=markets)
+            await update_status("Key Insights", "running")
             if markets and len(markets) > 0:
                 top_market = markets[0]
                 script = await self._generate_script(top_market)
                 result["stages"]["script"] = script
-                await update_status("内容策划", "completed", data=script)
+                await update_status("Key Insights", "completed", data=script)
             else:
                  raise Exception("No markets found from Polymarket API")
             video_path = config.get("video_path", "test_video.mp4")
@@ -51,7 +51,7 @@ class FastKOLAgent(SpoonReactMCP):
                  with open(video_path, "wb") as f:
                      f.write(b"0" * 1024)
 
-            await update_status("视频发布(YouTube)", "running")
+            await update_status("Narration Script", "running")
             youtube_res = await self.youtube_tool.execute(
                 video_path=video_path,
                 title=script["title"],
@@ -59,7 +59,7 @@ class FastKOLAgent(SpoonReactMCP):
             )
             
             result["stages"]["publish"] = youtube_res
-            await update_status("视频发布(YouTube)", "completed", data=youtube_res)
+            await update_status("Narration Script", "completed", data=youtube_res)
 
             result["status"] = "completed"
 
