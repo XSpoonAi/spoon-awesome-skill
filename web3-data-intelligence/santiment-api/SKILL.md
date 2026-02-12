@@ -1,7 +1,7 @@
 ---
 name: santiment-api
 description: Query the Santiment GraphQL API for on-chain, financial, social, and development crypto metrics across 2,000+ assets
-version: 1.1.4
+version: 1.1.5
 author: Santiment <support@santiment.net>
 tags: [santiment, crypto, graphql, on-chain, metrics, blockchain, defi, exchange-flows, social-sentiment, mvrv, whale-tracking]
 

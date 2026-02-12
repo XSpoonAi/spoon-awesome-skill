@@ -47,7 +47,7 @@ def graphql_request(query: str, api_key: str, variables: dict | None = None) -> 
         headers={
             "Content-Type": "application/json",
             "Authorization": f"Apikey {api_key}",
-            "User-Agent": "santiment-api-skill/1.1.4",
+            "User-Agent": "santiment-api-skill/1.1.5",
         },
         method="POST",
     )

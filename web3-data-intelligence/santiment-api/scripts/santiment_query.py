@@ -128,7 +128,7 @@ def execute_query(query: str, variables: dict, api_key: str) -> dict:
         headers={
             "Content-Type": "application/json",
             "Authorization": f"Apikey {api_key}",
-            "User-Agent": "santiment-api-skill/1.1.4",
+            "User-Agent": "santiment-api-skill/1.1.5",
         },
         method="POST",
     )
