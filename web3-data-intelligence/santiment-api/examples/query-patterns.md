@@ -164,7 +164,7 @@ Demonstrates the full discovery flow when the user asks for data and you don't k
 
 **Step 1 — Fetch all metrics and search by keyword.**
 
-The response is large (1,000+ metrics), so save it to a file:
+The response is large (1,000+ metrics), so save it to a file with `-o` and read it directly (e.g., `open()` in Python). Do not pipe the contents through stdin at any stage — neither from curl nor when processing the file afterward:
 
 ```bash
 curl -s -X POST https://api.santiment.net/graphql \

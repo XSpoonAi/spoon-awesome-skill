@@ -187,7 +187,7 @@ When you don't know the exact metric name for a user's request, follow this 3-st
 }
 ```
 
-Returns 1,000+ `snake_case` strings. **The response is large** — save to a file, don't pipe through stdin:
+Returns 1,000+ `snake_case` strings. **The response is large** — save to a file with `-o` and read it directly (e.g., `open()` in Python). Do not pipe the contents through stdin at any stage — neither from curl nor when processing the file afterward:
 
 ```bash
 curl -s -X POST https://api.santiment.net/graphql \
