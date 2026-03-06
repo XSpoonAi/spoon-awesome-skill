@@ -62,6 +62,7 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 | [DAO Tooling](./web3-core-operations/dao-tooling/) | Governance, proposals, treasury | 4 |
 | [DeFi](./web3-core-operations/defi/) | Core DeFi operations | 5 |
 | [DeFi Protocols](./web3-core-operations/defi-protocols/) | Protocol-specific integrations | 4 |
+| [OBSD LaunchPad](https://github.com/lordbasilaiassistant-sudo/thryxagi/tree/main/skills/obsd-launchpad) | Free token deployment on Base, earn OBSD | [External](https://github.com/lordbasilaiassistant-sudo/thryxagi) |
 | [Identity & Auth](./web3-core-operations/identity-auth/) | ENS, SIWE, sessions | 3 |
 | [Neo](./web3-core-operations/neo/) | Neo N3 blockchain | 4 |
 | [NFT](./web3-core-operations/nft/) | NFT minting, trading | 4 |
