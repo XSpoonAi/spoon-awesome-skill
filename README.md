@@ -18,6 +18,28 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 
 > **Note:** SpoonOS Skills is the foundational collection for Vibe Coding, not a challenge track. You can still submit issues and PRs for improvements.
 
+## Quick Install via npx
+
+Install any skill directly into Claude Code with one command:
+
+```bash
+# List all available skills
+npx spoon-skills list
+
+# Install a single skill
+npx spoon-skills install web3-defi
+
+# Install all skills in a track
+npx spoon-skills install --all --track web3-core-operations
+
+# Install all 31 skills at once
+npx spoon-skills install --all
+```
+
+Skills are installed to `~/.claude/skills/` and immediately available in Claude Code as slash commands (e.g. `/web3-defi`).
+
+> **npm package:** [spoon-skills](https://www.npmjs.com/package/spoon-skills) — requires Node.js 16+
+
 ## Skill Challenge Tracks
 
 ### Three Pillars of Excellence
@@ -344,7 +366,10 @@ We recommend using **SpoonReactSkill**, but you can also test with other skill-e
 # Option 1: SpoonReactSkill (Recommended)
 python your_test_agent.py
 
-# Option 2: Claude Code
+# Option 2: Claude Code (via npx)
+npx spoon-skills install your-skill-id
+
+# Option 3: Claude Code (manual)
 cp -r your-skill/ .claude/skills/
 ```
 
