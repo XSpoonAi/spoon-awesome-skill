@@ -18,48 +18,45 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 
 > **Note:** SpoonOS Skills is the foundational collection for Vibe Coding, not a challenge track. You can still submit issues and PRs for improvements.
 
-## Quick Install via npx
+````markdown
+  ## Quick Install via npx
 
-Install any skill directly into Claude Code with one command:
+  Install any skill directly into **Claude Code** or **spoon-bot** with one
+  command:
 
-```bash
-# List all available skills
-npx spoon-skills list
+  ```bash
+  # List all available skills
+  npx spoon-skills list
 
-# Install a single skill
-npx spoon-skills install web3-defi
+  # ── Claude Code ──────────────────────────────────────
+  # Install a single skill
+  npx spoon-skills install web3-defi
 
-# Install all skills in a track
-npx spoon-skills install --all --track web3-core-operations
+  # Install all skills in a track
+  npx spoon-skills install --all --track web3-core-operations
 
-# Install all 31 skills at once
-npx spoon-skills install --all
-```
+  # Install all 31 skills at once
+  npx spoon-skills install --all
 
-Skills are installed to `~/.claude/skills/` and immediately available in Claude Code as slash commands (e.g. `/web3-defi`).
+  # ── spoon-bot (includes SKILL.md + Python scripts) ───
+  npx spoon-skills install web3-defi --spoon-bot
 
-> **npm package:** [spoon-skills](https://www.npmjs.com/package/spoon-skills) — requires Node.js 16+
+  npx spoon-skills install --all --spoon-bot
 
-## Skill Challenge Tracks
+  npx spoon-skills install --all --track spoonos-skills --spoon-bot
 
-### Three Pillars of Excellence
+  ┌────────────────────┬────────────────────────────────────────────────────┐
+  │       Target       │                    Install path                    │
+  ├────────────────────┼────────────────────────────────────────────────────┤
+  │ Claude Code        │ ~/.claude/skills/<id>.md                           │
+  │ (default)          │                                                    │
+  ├────────────────────┼────────────────────────────────────────────────────┤
+  │ spoon-bot          │ ~/.spoon-bot/workspace/skills/<name>/SKILL.md +    │
+  │ (--spoon-bot)      │ scripts/                                           │
+  └────────────────────┴────────────────────────────────────────────────────┘
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    SKILL CHALLENGE STRUCTURE                        │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                     │
-│  ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────┐ │
-│  │ TECHNICAL EXCELLENCE │  │ OPERATIONAL         │  │ PLATFORM    │ │
-│  │                     │  │ EFFICIENCY          │  │ EVOLUTION   │ │
-│  │ • Data Intelligence │  │ • AI Productivity   │  │             │ │
-│  │ • Core Operations   │  │ • Enterprise Skills │  │ • Routing   │ │
-│  │ • (Security*)       │  │ • (DAO Ops*)        │  │ • Coverage  │ │
-│  └─────────────────────┘  └─────────────────────┘  └─────────────┘ │
-│                                                                     │
-│  * Future expansion tracks                                          │
-└─────────────────────────────────────────────────────────────────────┘
-```
+  ---
+
 
 ### Track 1: Web3 Data Intelligence 🧠
 
@@ -367,11 +364,15 @@ We recommend using **SpoonReactSkill**, but you can also test with other skill-e
 python your_test_agent.py
 
 # Option 2: Claude Code (via npx)
-npx spoon-skills install your-skill-id
+  npx spoon-skills install your-skill-id
 
-# Option 3: Claude Code (manual)
-cp -r your-skill/ .claude/skills/
-```
+# Option 3: spoon-bot (via npx, includes scripts)
+  npx spoon-skills install your-skill-id --spoon-bot
+
+# Option 4: Claude Code (manual)
+  cp -r your-skill/ .claude/skills/
+  ```
+
 
 ## License
 
