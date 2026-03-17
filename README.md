@@ -45,15 +45,10 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 
   npx spoon-skills install --all --track spoonos-skills --spoon-bot
 
-  ┌────────────────────┬────────────────────────────────────────────────────┐
-  │       Target       │                    Install path                    │
-  ├────────────────────┼────────────────────────────────────────────────────┤
-  │ Claude Code        │ ~/.claude/skills/<id>.md                           │
-  │ (default)          │                                                    │
-  ├────────────────────┼────────────────────────────────────────────────────┤
-  │ spoon-bot          │ ~/.spoon-bot/workspace/skills/<name>/SKILL.md +    │
-  │ (--spoon-bot)      │ scripts/                                           │
-  └────────────────────┴────────────────────────────────────────────────────┘
+| Target | Install path |
+|--------|-------------|
+| Claude Code (default) | `~/.claude/skills/<id>.md` + `~/.claude/skills/<id>/scripts/` |
+| spoon-bot (`--spoon-bot`) | `~/.spoon-bot/workspace/skills/<name>/SKILL.md` + `scripts/` |
 
   ---
 
