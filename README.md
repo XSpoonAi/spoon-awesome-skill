@@ -2,14 +2,124 @@
 
 A curated collection of high-quality Claude Code skills for SpoonOS development, Web3 integrations, AI productivity, and enterprise tooling.
 
-**62+ Python scripts** across **32 skills** in 4 collections:
+**57+ Python scripts** across **5 Skill Challenge Tracks**:
 
-| Collection                          | Skills | Status                    | Purpose                            |
-| ----------------------------------- | ------ | ------------------------- | ---------------------------------- |
-| [SpoonOS Skills](./spoonos-skills/) | 8      | 🟢 Complete               | Vibe Coding for agent development  |
-| [Web3 Skills](./web3-skills/)       | 12     | 🟢 Complete               | Blockchain integrations for agents |
-| [Web2 Skills](./web2-skills/)       | 6      | 🔵 Open for Contributions | API & service integrations         |
-| [Dev Skills](./dev-skills/)         | 6      | 🔵 Open for Contributions | Development workflow tools         |
+| Collection                          | Skills | Status  | Focus                             |
+| ----------------------------------- | ------ | ------- | --------------------------------- |
+| [SpoonOS Skills](./spoonos-skills/) | 8      | 🟢 Core | Vibe Coding for agent development |
+
+| Challenge Track                                     | Skills | Status                  | Focus                        |
+| --------------------------------------------------- | ------ | ----------------------- | ---------------------------- |
+| [Web3 Data Intelligence](./web3-data-intelligence/) | 2      | 🔵 Open for Submissions | On-chain analysis & insights |
+| [Web3 Core Operations](./web3-core-operations/)     | 9      | 🔵 Open for Submissions | Smart contracts & protocols  |
+| [AI-Enhanced Productivity](./ai-productivity/)      | 6      | 🔵 Open for Submissions | API & automation             |
+| [Enterprise & Team Skills](./enterprise-skills/)    | 6      | 🔵 Open for Submissions | Code quality & collaboration |
+| [Platform Challenge](./platform-challenge/)         | -      | 🆕 Meta Track           | Skill routing & coverage     |
+
+> **Note:** SpoonOS Skills is the foundational collection for Vibe Coding, not a challenge track. You can still submit issues and PRs for improvements.
+
+## Skill Challenge Tracks
+
+### Three Pillars of Excellence
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    SKILL CHALLENGE STRUCTURE                        │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                     │
+│  ┌─────────────────────┐  ┌─────────────────────┐  ┌─────────────┐ │
+│  │ TECHNICAL EXCELLENCE │  │ OPERATIONAL         │  │ PLATFORM    │ │
+│  │                     │  │ EFFICIENCY          │  │ EVOLUTION   │ │
+│  │ • Data Intelligence │  │ • AI Productivity   │  │             │ │
+│  │ • Core Operations   │  │ • Enterprise Skills │  │ • Routing   │ │
+│  │ • (Security*)       │  │ • (DAO Ops*)        │  │ • Coverage  │ │
+│  └─────────────────────┘  └─────────────────────┘  └─────────────┘ │
+│                                                                     │
+│  * Future expansion tracks                                          │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Track 1: Web3 Data Intelligence 🧠
+
+**Focus:** The "Brain" of Web3 - On-chain analysis, indexing, and transforming raw blockchain data into actionable insights.
+
+| Skill                                                            | Description                                      | Scripts |
+| ---------------------------------------------------------------- | ------------------------------------------------ | ------- |
+| [On-Chain Analysis](./web3-data-intelligence/onchain-analysis/)  | Transaction tracking, whale monitoring           | 6       |
+| [Security Analysis](./web3-data-intelligence/security-analysis/) | Smart contract auditing, vulnerability detection | 4       |
+
+**Challenge:** Build skills that transform raw blockchain data into valuable insights.
+
+[View Web3 Data Intelligence →](./web3-data-intelligence/README.md)
+
+### Track 2: Web3 Core Operations ⚙️
+
+**Focus:** The "Engine Room" of Web3 - Smart contracts, protocol management, and blockchain infrastructure.
+
+| Skill                                                    | Description                     | Scripts |
+| -------------------------------------------------------- | ------------------------------- | ------- |
+| [Bridge](./web3-core-operations/bridge/)                 | Cross-chain transfers           | 3       |
+| [DAO Tooling](./web3-core-operations/dao-tooling/)       | Governance, proposals, treasury | 4       |
+| [DeFi](./web3-core-operations/defi/)                     | Core DeFi operations            | 5       |
+| [DeFi Protocols](./web3-core-operations/defi-protocols/) | Protocol-specific integrations  | 4       |
+| [Identity & Auth](./web3-core-operations/identity-auth/) | ENS, SIWE, sessions             | 3       |
+| [Neo](./web3-core-operations/neo/)                       | Neo N3 blockchain               | 4       |
+| [NFT](./web3-core-operations/nft/)                       | NFT minting, trading            | 4       |
+| [Solana](./web3-core-operations/solana/)                 | Solana ecosystem                | 5       |
+| [Wallet](./web3-core-operations/wallet/)                 | Wallet management               | 5       |
+
+**Challenge:** Build skills that enable seamless blockchain protocol interactions.
+
+[View Web3 Core Operations →](./web3-core-operations/README.md)
+
+### Track 3: AI-Enhanced Productivity 🚀
+
+**Focus:** AI-powered automation for modern development workflows - not just API wrappers, but intelligent automation.
+
+| Skill                                                 | Description             | Status           |
+| ----------------------------------------------------- | ----------------------- | ---------------- |
+| [API Integration](./ai-productivity/api-integration/) | REST, GraphQL, webhooks | 🔵 Accepting PRs |
+| [Database](./ai-productivity/database/)               | SQL, NoSQL, vector DBs  | 🔵 Accepting PRs |
+| [Messaging](./ai-productivity/messaging/)             | Slack, Discord, Email   | 🔵 Accepting PRs |
+| [Cloud Services](./ai-productivity/cloud-services/)   | AWS, GCP, Azure         | 🔵 Accepting PRs |
+| [Monitoring](./ai-productivity/monitoring/)           | Prometheus, Grafana     | 🔵 Accepting PRs |
+| [Storage](./ai-productivity/storage/)                 | S3, GCS, files          | 🔵 Accepting PRs |
+
+**Challenge:** Build skills that make AI agents genuinely productive in real-world workflows.
+
+[View AI-Enhanced Productivity →](./ai-productivity/README.md)
+
+### Track 4: Enterprise & Team Skills 👥
+
+**Focus:** Professional collaboration, project management, security compliance, and team productivity.
+
+| Skill                                               | Description                         | Status           |
+| --------------------------------------------------- | ----------------------------------- | ---------------- |
+| [Code Review](./enterprise-skills/code-review/)     | Automated review, security scanning | 🔵 Accepting PRs |
+| [Documentation](./enterprise-skills/documentation/) | README, API docs, changelogs        | 🔵 Accepting PRs |
+| [Refactoring](./enterprise-skills/refactoring/)     | Extract, rename, cleanup            | 🔵 Accepting PRs |
+| [Debugging](./enterprise-skills/debugging/)         | Error analysis, log parsing         | 🔵 Accepting PRs |
+| [Testing](./enterprise-skills/testing/)             | Test generation, coverage           | 🔵 Accepting PRs |
+| [Performance](./enterprise-skills/performance/)     | Profiling, optimization             | 🔵 Accepting PRs |
+
+**Challenge:** Build skills that enhance team productivity and code quality at scale.
+
+[View Enterprise & Team Skills →](./enterprise-skills/README.md)
+
+### Track 5: Platform Challenge 🏆
+
+**Focus:** Meta-level improvements to the SpoonOS skill system itself.
+
+**Challenge Areas:**
+
+- **Skill Discovery & Routing**: Semantic matching, multi-skill orchestration
+- **Coverage Analysis**: Gap detection, quality metrics
+- **Platform Optimization**: Caching, parallel execution, error recovery
+- **Developer Experience**: Templates, testing frameworks, documentation tools
+
+[View Platform Challenge →](./platform-challenge/README.md)
+
+---
 
 ## Two Skill Collections, Two Purposes
 
@@ -158,168 +268,6 @@ if __name__ == "__main__":
 | [Testing Patterns](./spoonos-skills/testing-patterns/)           | Unit tests, LLM mocking, graph tests               | 3       |
 
 [View SpoonOS Skills Documentation →](./spoonos-skills/README.md)
-
-### Web3 Skills (12 skills, 41 scripts) — For Skill Agent Integrations
-
-**Provide blockchain tools for `SpoonReactSkill` agents to use.**
-
-Copy these skills to `.agent/skills/` and your skill agents will automatically load them as tools.
-
-| Skill                                                      | Description                         | Chains      | Scripts |
-| ---------------------------------------------------------- | ----------------------------------- | ----------- | ------- |
-| [DeFi Protocol](./web3-skills/defi/)                       | Uniswap, Aave, TVL tracking         | EVM         | 3       |
-| [DeFi Protocols (Advanced)](./web3-skills/defi-protocols/) | Aave V3, 1inch, CoW Protocol, Yield | EVM         | 4       |
-| [NFT Market](./web3-skills/nft/)                           | OpenSea, rarity, trends             | EVM, Solana | 3       |
-| [On-Chain Analysis](./web3-skills/onchain-analysis/)       | Etherscan, gas, contracts           | EVM         | 4       |
-| [Wallet Operations](./web3-skills/wallet/)                 | Balance, portfolio, tx builder      | Multi-chain | 3       |
-| [Cross-Chain Bridge](./web3-skills/bridge/)                | Quote, routes, status               | Multi-chain | 3       |
-| [Solana Ecosystem](./web3-skills/solana/)                  | Jupiter, balance, NFT               | Solana      | 3       |
-| [Neo Ecosystem](./web3-skills/neo/)                        | Balance, contracts                  | Neo         | 2       |
-| [Identity & Auth](./web3-skills/identity-auth/)            | SIWE, ENS, sessions                 | EVM         | 3       |
-| [Security Analysis](./web3-skills/security-analysis/)      | GoPlus, Honeypot, Flashbots         | EVM         | 4       |
-| [DAO Tooling](./web3-skills/dao-tooling/)                  | Snapshot, Tally, Governor           | EVM         | 4       |
-| [Gas Optimization](./web3-skills/gas-optimization/)        | Base fee, batch, EIP-1559, blob     | EVM         | 5       |
-
-[View Web3 Skills Documentation →](./web3-skills/README.md)
-
-### Web2 Skills (6 skills) — Open for Contributions 🔵
-
-**Traditional API and service integrations for SpoonOS agents.**
-
-| Skill                                             | Description                 | Status           |
-| ------------------------------------------------- | --------------------------- | ---------------- |
-| [API Integration](./web2-skills/api-integration/) | REST, GraphQL, webhooks     | 🔵 Accepting PRs |
-| [Database](./web2-skills/database/)               | SQL, NoSQL, vector DBs      | 🔵 Accepting PRs |
-| [Messaging](./web2-skills/messaging/)             | Slack, Discord, Email, SMS  | 🔵 Accepting PRs |
-| [Cloud Services](./web2-skills/cloud-services/)   | AWS, GCP, Azure             | 🔵 Accepting PRs |
-| [Monitoring](./web2-skills/monitoring/)           | Prometheus, Grafana, alerts | 🔵 Accepting PRs |
-| [Storage](./web2-skills/storage/)                 | S3, GCS, file management    | 🔵 Accepting PRs |
-
-[View Web2 Skills Documentation →](./web2-skills/README.md)
-
-### Dev Skills (6 skills) — Open for Contributions 🔵
-
-**Development workflow and tooling skills for all developers.**
-
-| Skill                                        | Description                         | Status           |
-| -------------------------------------------- | ----------------------------------- | ---------------- |
-| [Code Review](./dev-skills/code-review/)     | Automated review, security scanning | 🔵 Accepting PRs |
-| [Documentation](./dev-skills/documentation/) | README, API docs, changelogs        | 🔵 Accepting PRs |
-| [Refactoring](./dev-skills/refactoring/)     | Extract, rename, dead code removal  | 🔵 Accepting PRs |
-| [Debugging](./dev-skills/debugging/)         | Error analysis, log parsing         | 🔵 Accepting PRs |
-| [Testing](./dev-skills/testing/)             | Test generation, coverage analysis  | 🔵 Accepting PRs |
-| [Performance](./dev-skills/performance/)     | Profiling, optimization             | 🔵 Accepting PRs |
-
-[View Dev Skills Documentation →](./dev-skills/README.md)
-
-## Example: Building a Web3 Skill Agent
-
-Use `SpoonReactSkill` to build agents that automatically load and use Web3 skills:
-
-```python
-from spoon_ai.agents import SpoonReactSkill
-from spoon_ai.chat import ChatBot
-
-# Path to your skills directory
-SKILLS_PATH = ".claude/skills"  # or ".agent/skills"
-
-class DeFiSkillAgent(SpoonReactSkill):
-    """
-    A DeFi agent that automatically activates Web3 skills.
-    Skills provide both prompts AND executable scripts as tools.
-    """
-
-    def __init__(self, **kwargs):
-        kwargs.setdefault('name', 'defi_skill_agent')
-        kwargs.setdefault('description', 'AI agent for DeFi operations')
-        kwargs.setdefault('skill_paths', [SKILLS_PATH])
-        kwargs.setdefault('scripts_enabled', True)  # Enable script execution
-        kwargs.setdefault('max_steps', 10)
-
-        super().__init__(**kwargs)
-
-    async def initialize(self):
-        await super().initialize()
-
-        # Activate Web3 skills - scripts become tools automatically
-        available_skills = self.list_skills()
-        print(f"Available skills: {available_skills}")
-
-        # Activate relevant skills
-        if "defi-protocols" in available_skills:
-            await self.activate_skill("defi-protocols")
-        if "security-analysis" in available_skills:
-            await self.activate_skill("security-analysis")
-
-        # Show active tools from skills
-        tools = self.skill_manager.get_active_tools()
-        print(f"Active tools: {[t.name for t in tools]}")
-
-
-async def main():
-    # Create agent with skill system
-    agent = DeFiSkillAgent(
-        llm=ChatBot(llm_provider="openai", model_name="gpt-4o"),
-        auto_trigger_skills=True,  # Auto-activate matching skills
-        max_auto_skills=3
-    )
-
-    await agent.initialize()
-
-    # Agent uses skill scripts as tools
-    result = await agent.run(
-        "Check if PEPE token is safe, then find the best swap route for 1 ETH to USDC"
-    )
-    print(result)
-
-
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
-```
-
-### How It Works
-
-1. **Skill Paths**: Agent loads skills from `.claude/skills/` or `.agent/skills/`
-2. **Scripts as Tools**: Python scripts in `scripts/` become callable tools
-3. **Auto-Activation**: Skills matching the query activate automatically
-4. **Skill Prompts**: SKILL.md content enhances the agent's system prompt
-
-## Skill Format
-
-Each skill follows a standardized format:
-
-```
-skill-name/
-├── SKILL.md              # Skill definition with YAML frontmatter
-├── scripts/              # Python scripts (runnable code)
-│   └── script_name.py
-└── references/           # Reference documentation
-    └── reference.md
-```
-
-### SKILL.md Structure
-
-```yaml
----
-name: skill-name
-description: Brief description for triggering
----
-
-# Skill Title
-
-## Quick Start
-[Minimal code example]
-
-## Scripts
-[Link to scripts]
-
-## References
-[Link to references]
-
-## Best Practices
-[Guidelines]
-```
 
 ## Installation
 
