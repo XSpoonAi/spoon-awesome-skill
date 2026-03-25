@@ -1,15 +1,15 @@
 # Spoon Awesome Skill
 
-A curated collection of high-quality Claude Code skills for SpoonOS development, Web3 integrations, Web2 services, and development tools.
+A curated collection of high-quality Claude Code skills for SpoonOS development, Web3 integrations, AI productivity, and enterprise tooling.
 
 **62+ Python scripts** across **32 skills** in 4 collections:
 
-| Collection | Skills | Status | Purpose |
-|------------|--------|--------|---------|
-| [SpoonOS Skills](./spoonos-skills/) | 8 | 🟢 Complete | Vibe Coding for agent development |
-| [Web3 Skills](./web3-skills/) | 12 | 🟢 Complete | Blockchain integrations for agents |
-| [Web2 Skills](./web2-skills/) | 6 | 🔵 Open for Contributions | API & service integrations |
-| [Dev Skills](./dev-skills/) | 6 | 🔵 Open for Contributions | Development workflow tools |
+| Collection                          | Skills | Status                    | Purpose                            |
+| ----------------------------------- | ------ | ------------------------- | ---------------------------------- |
+| [SpoonOS Skills](./spoonos-skills/) | 8      | 🟢 Complete               | Vibe Coding for agent development  |
+| [Web3 Skills](./web3-skills/)       | 12     | 🟢 Complete               | Blockchain integrations for agents |
+| [Web2 Skills](./web2-skills/)       | 6      | 🔵 Open for Contributions | API & service integrations         |
+| [Dev Skills](./dev-skills/)         | 6      | 🔵 Open for Contributions | Development workflow tools         |
 
 ## Two Skill Collections, Two Purposes
 
@@ -45,7 +45,7 @@ Web3 skills contain executable scripts that become callable tools when loaded by
 │                            ▼                                     │
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │              SpoonReactSkill Agent                       │    │
-│  │  skill_paths = [".agent/skills/web3-skills"]             │    │
+│  │  skill_paths = [".agent/skills/"]                        │    │
 │  │  scripts_enabled = True                                  │    │
 │  │  auto_trigger_skills = True                              │    │
 │  └─────────────────────────────────────────────────────────┘    │
@@ -55,22 +55,11 @@ Web3 skills contain executable scripts that become callable tools when loaded by
 │                            ▼                                     │
 │  ┌─────────────────────────────────────────────────────────┐    │
 │  │              Web3 Skills (.agent/skills/)                │    │
-│  │  • DeFi Protocols → aave_lending, oneinch_swap          │    │
-│  │  • Security → goplus_security, honeypot_check           │    │
-│  │  • DAO → snapshot_vote, governor_vote                   │    │
-│  │  • NFT → opensea_collection, nft_rarity                 │    │
+│  │  • Data Intelligence → onchain_analysis, security_scan  │    │
+│  │  • Core Operations → defi, dao, nft, bridge, wallet     │    │
 │  └─────────────────────────────────────────────────────────┘    │
 └──────────────────────────────────────────────────────────────────┘
 ```
-
-### What You Can Build
-
-| Agent Type | SpoonOS Skills Used | Web3 Skills Integrated |
-|------------|---------------------|------------------------|
-| **DeFi Trading Bot** | agent-development, platform-integration | defi-protocols, security-analysis |
-| **NFT Automation** | agent-development, graph-development | nft, wallet |
-| **DAO Governance Bot** | agent-development, testing-patterns | dao-tooling, identity-auth |
-| **Security Analyzer** | tool-development | security-analysis, onchain-analysis |
 
 ## Vibe Coding with SpoonOS Skills
 
@@ -85,53 +74,88 @@ cp -r spoonos-skills/* .claude/skills/
 
 # Step 2: Copy Web3 Skills for your generated agents to use
 mkdir -p .agent/skills
-cp -r web3-skills/* .agent/skills/
+cp -r web3-data-intelligence/* .agent/skills/
+cp -r web3-core-operations/* .agent/skills/
 ```
 
 ### Just Describe What You Want
 
 With SpoonOS skills installed, describe your goal and the AI generates complete agents:
 
-| You Say | SpoonOS Skills Used | Generated Output |
-|---------|---------------------|------------------|
-| "Build a trading bot for Uniswap" | agent-development, application-templates | Complete `SpoonReactSkill` agent |
-| "Create a DAO voting monitor" | agent-development, platform-integration | Agent with Telegram/Discord alerts |
-| "Deploy my agent to AWS Lambda" | deployment-guide | Dockerfile + Lambda handler |
-| "Add security checks to my bot" | tool-development | Agent that loads security-analysis skills |
+| You Say                           | Skills Used                         | Generated Output                   |
+| --------------------------------- | ----------------------------------- | ---------------------------------- |
+| "Build a trading bot for Uniswap" | agent-development, defi             | Complete `SpoonReactSkill` agent   |
+| "Create a whale monitoring alert" | agent-development, onchain-analysis | Agent with Telegram/Discord alerts |
+| "Deploy my agent to AWS Lambda"   | deployment-guide                    | Dockerfile + Lambda handler        |
+| "Add security checks to my bot"   | tool-development, security-analysis | Agent that loads security skills   |
 
-### Example Vibe Coding Session
+## Example: Building a Web3 Skill Agent
 
+Use `SpoonReactSkill` to build agents that automatically load and use Web3 skills:
+
+```python
+from spoon_ai.agents import SpoonReactSkill
+from spoon_ai.chat import ChatBot
+
+# Path to your skills directory
+SKILLS_PATH = ".agent/skills"
+
+class DeFiSkillAgent(SpoonReactSkill):
+    """
+    A DeFi agent that automatically activates Web3 skills.
+    Skills provide both prompts AND executable scripts as tools.
+    """
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault('name', 'defi_skill_agent')
+        kwargs.setdefault('description', 'AI agent for DeFi operations')
+        kwargs.setdefault('skill_paths', [SKILLS_PATH])
+        kwargs.setdefault('scripts_enabled', True)
+        kwargs.setdefault('max_steps', 10)
+        super().__init__(**kwargs)
+
+    async def initialize(self):
+        await super().initialize()
+        # Activate relevant skills
+        if "defi" in self.list_skills():
+            await self.activate_skill("defi")
+        if "security-analysis" in self.list_skills():
+            await self.activate_skill("security-analysis")
+
+
+async def main():
+    agent = DeFiSkillAgent(
+        llm=ChatBot(llm_provider="openai", model_name="gpt-4o"),
+        auto_trigger_skills=True,
+        max_auto_skills=3
+    )
+    await agent.initialize()
+
+    result = await agent.run(
+        "Check if PEPE token is safe, then find the best swap route for 1 ETH to USDC"
+    )
+    print(result)
+
+
+if __name__ == "__main__":
+    import asyncio
+    asyncio.run(main())
 ```
-You: "I want an agent that monitors Aave positions and alerts me on Telegram
-     when my health factor drops below 1.5"
 
-Claude Code: Using SpoonOS skills: agent-development, platform-integration
-
-[Generates complete SpoonReactSkill agent that:]
-- Loads Web3 skills from .agent/skills/
-- Uses defi-protocols/scripts/aave_lending.py as a tool
-- Integrates platform-integration/scripts/telegram_bot.py
-- Runs on a schedule via platform-integration/scripts/scheduler.py
-```
-
-## Collections
-
-### SpoonOS Skills (8 skills, 21 scripts) — For Vibe Coding
+## SpoonOS Skills (8 skills, 21 scripts) — For Vibe Coding
 
 **Empower developers to build SpoonOS Agents and applications.**
 
-Copy these skills to `.claude/skills/` and use Vibe Coding to generate complete agents.
-
-| Skill | Description | Scripts |
-|-------|-------------|---------|
-| [Agent Development](./spoonos-skills/agent-development/) | Build AI agents with SpoonReactMCP/SpoonReactSkill | 3 |
-| [Graph Development](./spoonos-skills/graph-development/) | StateGraph workflow construction | 2 |
-| [ERC-8004 Standard](./spoonos-skills/erc8004-standard/) | Trustless on-chain agent identity | 1 |
-| [Tool Development](./spoonos-skills/tool-development/) | MCP tools and toolkit extensions | 2 |
-| [Application Templates](./spoonos-skills/application-templates/) | Trading bot, NFT minter, DAO assistant | 3 |
-| [Platform Integration](./spoonos-skills/platform-integration/) | Telegram, Discord, REST API, Scheduler | 4 |
-| [Deployment Guide](./spoonos-skills/deployment-guide/) | Docker, AWS Lambda, Cloud Run | 3 |
-| [Testing Patterns](./spoonos-skills/testing-patterns/) | Unit tests, LLM mocking, graph tests | 3 |
+| Skill                                                            | Description                                        | Scripts |
+| ---------------------------------------------------------------- | -------------------------------------------------- | ------- |
+| [Agent Development](./spoonos-skills/agent-development/)         | Build AI agents with SpoonReactMCP/SpoonReactSkill | 3       |
+| [Graph Development](./spoonos-skills/graph-development/)         | StateGraph workflow construction                   | 2       |
+| [ERC-8004 Standard](./spoonos-skills/erc8004-standard/)          | Trustless on-chain agent identity                  | 1       |
+| [Tool Development](./spoonos-skills/tool-development/)           | MCP tools and toolkit extensions                   | 2       |
+| [Application Templates](./spoonos-skills/application-templates/) | Trading bot, NFT minter, DAO assistant             | 3       |
+| [Platform Integration](./spoonos-skills/platform-integration/)   | Telegram, Discord, REST API, Scheduler             | 4       |
+| [Deployment Guide](./spoonos-skills/deployment-guide/)           | Docker, AWS Lambda, Cloud Run                      | 3       |
+| [Testing Patterns](./spoonos-skills/testing-patterns/)           | Unit tests, LLM mocking, graph tests               | 3       |
 
 [View SpoonOS Skills Documentation →](./spoonos-skills/README.md)
 
@@ -141,20 +165,20 @@ Copy these skills to `.claude/skills/` and use Vibe Coding to generate complete 
 
 Copy these skills to `.agent/skills/` and your skill agents will automatically load them as tools.
 
-| Skill | Description | Chains | Scripts |
-|-------|-------------|--------|---------|
-| [DeFi Protocol](./web3-skills/defi/) | Uniswap, Aave, TVL tracking | EVM | 3 |
-| [DeFi Protocols (Advanced)](./web3-skills/defi-protocols/) | Aave V3, 1inch, CoW Protocol, Yield | EVM | 4 |
-| [NFT Market](./web3-skills/nft/) | OpenSea, rarity, trends | EVM, Solana | 3 |
-| [On-Chain Analysis](./web3-skills/onchain-analysis/) | Etherscan, gas, contracts | EVM | 4 |
-| [Wallet Operations](./web3-skills/wallet/) | Balance, portfolio, tx builder | Multi-chain | 3 |
-| [Cross-Chain Bridge](./web3-skills/bridge/) | Quote, routes, status | Multi-chain | 3 |
-| [Solana Ecosystem](./web3-skills/solana/) | Jupiter, balance, NFT | Solana | 3 |
-| [Neo Ecosystem](./web3-skills/neo/) | Balance, contracts | Neo | 2 |
-| [Identity & Auth](./web3-skills/identity-auth/) | SIWE, ENS, sessions | EVM | 3 |
-| [Security Analysis](./web3-skills/security-analysis/) | GoPlus, Honeypot, Flashbots | EVM | 4 |
-| [DAO Tooling](./web3-skills/dao-tooling/) | Snapshot, Tally, Governor | EVM | 4 |
-| [Gas Optimization](./web3-skills/gas-optimization/) | Base fee, batch, EIP-1559, blob | EVM | 5 |
+| Skill                                                      | Description                         | Chains      | Scripts |
+| ---------------------------------------------------------- | ----------------------------------- | ----------- | ------- |
+| [DeFi Protocol](./web3-skills/defi/)                       | Uniswap, Aave, TVL tracking         | EVM         | 3       |
+| [DeFi Protocols (Advanced)](./web3-skills/defi-protocols/) | Aave V3, 1inch, CoW Protocol, Yield | EVM         | 4       |
+| [NFT Market](./web3-skills/nft/)                           | OpenSea, rarity, trends             | EVM, Solana | 3       |
+| [On-Chain Analysis](./web3-skills/onchain-analysis/)       | Etherscan, gas, contracts           | EVM         | 4       |
+| [Wallet Operations](./web3-skills/wallet/)                 | Balance, portfolio, tx builder      | Multi-chain | 3       |
+| [Cross-Chain Bridge](./web3-skills/bridge/)                | Quote, routes, status               | Multi-chain | 3       |
+| [Solana Ecosystem](./web3-skills/solana/)                  | Jupiter, balance, NFT               | Solana      | 3       |
+| [Neo Ecosystem](./web3-skills/neo/)                        | Balance, contracts                  | Neo         | 2       |
+| [Identity & Auth](./web3-skills/identity-auth/)            | SIWE, ENS, sessions                 | EVM         | 3       |
+| [Security Analysis](./web3-skills/security-analysis/)      | GoPlus, Honeypot, Flashbots         | EVM         | 4       |
+| [DAO Tooling](./web3-skills/dao-tooling/)                  | Snapshot, Tally, Governor           | EVM         | 4       |
+| [Gas Optimization](./web3-skills/gas-optimization/)        | Base fee, batch, EIP-1559, blob     | EVM         | 5       |
 
 [View Web3 Skills Documentation →](./web3-skills/README.md)
 
@@ -162,14 +186,14 @@ Copy these skills to `.agent/skills/` and your skill agents will automatically l
 
 **Traditional API and service integrations for SpoonOS agents.**
 
-| Skill | Description | Status |
-|-------|-------------|--------|
-| [API Integration](./web2-skills/api-integration/) | REST, GraphQL, webhooks | 🔵 Accepting PRs |
-| [Database](./web2-skills/database/) | SQL, NoSQL, vector DBs | 🔵 Accepting PRs |
-| [Messaging](./web2-skills/messaging/) | Slack, Discord, Email, SMS | 🔵 Accepting PRs |
-| [Cloud Services](./web2-skills/cloud-services/) | AWS, GCP, Azure | 🔵 Accepting PRs |
-| [Monitoring](./web2-skills/monitoring/) | Prometheus, Grafana, alerts | 🔵 Accepting PRs |
-| [Storage](./web2-skills/storage/) | S3, GCS, file management | 🔵 Accepting PRs |
+| Skill                                             | Description                 | Status           |
+| ------------------------------------------------- | --------------------------- | ---------------- |
+| [API Integration](./web2-skills/api-integration/) | REST, GraphQL, webhooks     | 🔵 Accepting PRs |
+| [Database](./web2-skills/database/)               | SQL, NoSQL, vector DBs      | 🔵 Accepting PRs |
+| [Messaging](./web2-skills/messaging/)             | Slack, Discord, Email, SMS  | 🔵 Accepting PRs |
+| [Cloud Services](./web2-skills/cloud-services/)   | AWS, GCP, Azure             | 🔵 Accepting PRs |
+| [Monitoring](./web2-skills/monitoring/)           | Prometheus, Grafana, alerts | 🔵 Accepting PRs |
+| [Storage](./web2-skills/storage/)                 | S3, GCS, file management    | 🔵 Accepting PRs |
 
 [View Web2 Skills Documentation →](./web2-skills/README.md)
 
@@ -177,14 +201,14 @@ Copy these skills to `.agent/skills/` and your skill agents will automatically l
 
 **Development workflow and tooling skills for all developers.**
 
-| Skill | Description | Status |
-|-------|-------------|--------|
-| [Code Review](./dev-skills/code-review/) | Automated review, security scanning | 🔵 Accepting PRs |
-| [Documentation](./dev-skills/documentation/) | README, API docs, changelogs | 🔵 Accepting PRs |
-| [Refactoring](./dev-skills/refactoring/) | Extract, rename, dead code removal | 🔵 Accepting PRs |
-| [Debugging](./dev-skills/debugging/) | Error analysis, log parsing | 🔵 Accepting PRs |
-| [Testing](./dev-skills/testing/) | Test generation, coverage analysis | 🔵 Accepting PRs |
-| [Performance](./dev-skills/performance/) | Profiling, optimization | 🔵 Accepting PRs |
+| Skill                                        | Description                         | Status           |
+| -------------------------------------------- | ----------------------------------- | ---------------- |
+| [Code Review](./dev-skills/code-review/)     | Automated review, security scanning | 🔵 Accepting PRs |
+| [Documentation](./dev-skills/documentation/) | README, API docs, changelogs        | 🔵 Accepting PRs |
+| [Refactoring](./dev-skills/refactoring/)     | Extract, rename, dead code removal  | 🔵 Accepting PRs |
+| [Debugging](./dev-skills/debugging/)         | Error analysis, log parsing         | 🔵 Accepting PRs |
+| [Testing](./dev-skills/testing/)             | Test generation, coverage analysis  | 🔵 Accepting PRs |
+| [Performance](./dev-skills/performance/)     | Profiling, optimization             | 🔵 Accepting PRs |
 
 [View Dev Skills Documentation →](./dev-skills/README.md)
 
@@ -308,7 +332,8 @@ git clone https://github.com/XSpoonAi/spoon-awesome-skill.git
 # Copy to your project's skill directory
 mkdir -p your-project/.claude/skills
 cp -r spoon-awesome-skill/spoonos-skills/* your-project/.claude/skills/
-cp -r spoon-awesome-skill/web3-skills/* your-project/.claude/skills/
+cp -r spoon-awesome-skill/web3-data-intelligence/* your-project/.claude/skills/
+cp -r spoon-awesome-skill/web3-core-operations/* your-project/.claude/skills/
 ```
 
 ### Option 2: Global Skills
@@ -316,14 +341,8 @@ cp -r spoon-awesome-skill/web3-skills/* your-project/.claude/skills/
 ```bash
 # Copy to global Claude Code skills directory
 cp -r spoon-awesome-skill/spoonos-skills/* ~/.claude/skills/
-cp -r spoon-awesome-skill/web3-skills/* ~/.claude/skills/
-```
-
-### Option 3: Direct Import
-
-```python
-# Import scripts directly in your code
-from spoon_awesome_skill.web3_skills.defi.scripts.uniswap_quote import UniswapQuoteTool
+cp -r spoon-awesome-skill/web3-data-intelligence/* ~/.claude/skills/
+cp -r spoon-awesome-skill/web3-core-operations/* ~/.claude/skills/
 ```
 
 ## Environment Variables
@@ -361,42 +380,26 @@ We welcome contributions! See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed 
 ### Quick Start
 
 1. Fork the repository
-2. Choose a skill category:
-   - `spoonos-skills/` - SpoonOS framework patterns
-   - `web3-skills/` - Blockchain integrations
-   - `web2-skills/` - API & service integrations (🟡 Open!)
-   - `dev-skills/` - Development tools (🟡 Open!)
-3. Create your skill with `SKILL.md`, `README.md`, and `scripts/`
-4. Submit PR with **effect demonstration**
+2. Choose a challenge track:
+   - `web3-data-intelligence/` - On-chain analytics
+   - `web3-core-operations/` - Protocol interactions
+   - `ai-productivity/` - AI automation (🔵 Open!)
+   - `enterprise-skills/` - Team tools (🔵 Open!)
+   - `platform-challenge/` - Meta improvements (🆕)
+3. Create your skill with `SKILL.md`, `README.md`, and optional `scripts/`
+4. Submit PR with **screenshots of running example**
 
-### PR Requirements
+### Testing Your Skill
 
-Your PR must include a demo showing:
+We recommend using **SpoonReactSkill**, but you can also test with other skill-enabled agents like **Claude Code**:
 
+```bash
+# Option 1: SpoonReactSkill (Recommended)
+python your_test_agent.py
+
+# Option 2: Claude Code
+cp -r your-skill/ .claude/skills/
 ```
-═══════════════════════════════════════════════════════════════
-                    SKILL DEMO: your-skill-name
-═══════════════════════════════════════════════════════════════
-
-AGENT: SpoonReactSkill
-MODEL: gpt-4o
-SKILLS LOADED: ["your-skill"]
-
-INPUT PROMPT:
-"Your test query here"
-
-EXECUTION TRACE:
-[Step 1] Tool call: tool_name({params})
-  → Output: {result}
-
-[Step 2] Agent reasoning...
-
-FINAL OUTPUT:
-"The complete agent response"
-═══════════════════════════════════════════════════════════════
-```
-
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for full requirements.
 
 ## License
 

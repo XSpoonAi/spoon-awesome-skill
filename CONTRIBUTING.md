@@ -2,30 +2,53 @@
 
 Thank you for your interest in contributing! This guide will help you submit high-quality skills.
 
-## Skill Categories
+## Skill Challenge Tracks
 
-| Directory | Purpose | Target Users |
-|-----------|---------|--------------|
-| `spoonos-skills/` | SpoonOS agent development patterns | Developers building agents |
-| `web3-skills/` | Blockchain & DeFi integrations | Web3 developers |
-| `web2-skills/` | Traditional API & service integrations | Full-stack developers |
-| `dev-skills/` | Development workflow & tooling | All developers |
+**Submissions are open for all challenge tracks.** SpoonOS Skills is the foundational collection (not a challenge track), but you can still submit issues and PRs for improvements.
+
+| Challenge Track | Directory | Purpose | Status |
+|-----------------|-----------|---------|--------|
+| Web3 Data Intelligence | `web3-data-intelligence/` | On-chain analysis & insights | 🔵 Open for Submissions |
+| Web3 Core Operations | `web3-core-operations/` | Smart contracts & protocols | 🔵 Open for Submissions |
+| AI-Enhanced Productivity | `ai-productivity/` | API & automation skills | 🔵 Open for Submissions |
+| Enterprise & Team | `enterprise-skills/` | Code quality & collaboration | 🔵 Open for Submissions |
+| Platform Challenge | `platform-challenge/` | Skill routing & coverage | 🆕 Meta |
+
+| Core Collection | Directory | Purpose | Status |
+|-----------------|-----------|---------|--------|
+| SpoonOS Skills | `spoonos-skills/` | Agent development patterns | 🟢 Issues/PRs welcome |
 
 ## Directory Structure
 
+**Submit your PRs directly to the corresponding track directory.** You may also create your own sub-categories to organize your skills.
+
 ```
 spoon-awesome-skill/
-├── spoonos-skills/          # SpoonOS framework skills
+├── spoonos-skills/              # SpoonOS framework skills (Issues/PRs welcome)
 │   └── your-skill/
-├── web3-skills/             # Blockchain integrations
-│   └── your-skill/
-├── web2-skills/             # Web2 API integrations
-│   └── your-skill/
-├── dev-skills/              # Development tools
-│   └── your-skill/
+├── web3-data-intelligence/      # On-chain analysis (Data Intelligence Track)
+│   ├── onchain-analysis/        # Existing category
+│   ├── security-analysis/       # Existing category
+│   └── your-new-category/       # Create your own sub-category!
+├── web3-core-operations/        # Protocol interactions (Core Operations Track)
+│   ├── defi/                    # Existing category
+│   └── your-new-category/       # Create your own sub-category!
+├── ai-productivity/             # AI automation (Productivity Track)
+│   └── your-skill-or-category/
+├── enterprise-skills/           # Team tools (Enterprise Track)
+│   └── your-skill-or-category/
+├── platform-challenge/          # Meta improvements (Platform Track)
+│   └── submissions/
+│       └── your-name/
 ├── CONTRIBUTING.md
 └── README.md
 ```
+
+### Submission Options
+
+1. **Add to existing category**: Submit your skill to an existing sub-directory
+2. **Create new category**: Create a new sub-directory for a new skill category
+3. **Direct submission**: Submit a single skill directly to the track directory
 
 ## Skill Format
 
@@ -124,12 +147,14 @@ class YourTool(BaseTool):
 ### 1. PR Title Format
 
 ```
-[category] Add skill-name skill
+[track] Add skill-name skill
 
 Examples:
-[web3-skills] Add compound-lending skill
-[web2-skills] Add slack-integration skill
-[dev-skills] Add code-review skill
+[web3-data-intelligence] Add token-analytics skill
+[web3-core-operations] Add compound-lending skill
+[ai-productivity] Add slack-integration skill
+[enterprise-skills] Add code-review skill
+[platform-challenge] Add skill-router tool
 ```
 
 ### 2. PR Description Template
@@ -140,7 +165,7 @@ Your PR description MUST include the following sections:
 ## Skill Overview
 
 - **Name**: your-skill-name
-- **Category**: web3-skills / web2-skills / dev-skills / spoonos-skills
+- **Track**: web3-data-intelligence / web3-core-operations / ai-productivity / enterprise-skills / platform-challenge
 - **Description**: What this skill does
 
 ## Demo: Effect Demonstration
