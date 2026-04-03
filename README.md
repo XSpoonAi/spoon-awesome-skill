@@ -4,17 +4,17 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 
 **57+ Python scripts** across **5 Skill Challenge Tracks**:
 
-| Collection | Skills | Status | Focus |
-|------------|--------|--------|-------|
-| [SpoonOS Skills](./spoonos-skills/) | 8 | 🟢 Core | Vibe Coding for agent development |
+| Collection                          | Skills | Status  | Focus                             |
+| ----------------------------------- | ------ | ------- | --------------------------------- |
+| [SpoonOS Skills](./spoonos-skills/) | 8      | 🟢 Core | Vibe Coding for agent development |
 
-| Challenge Track | Skills | Status | Focus |
-|-----------------|--------|--------|-------|
-| [Web3 Data Intelligence](./web3-data-intelligence/) | 2 | 🔵 Open for Submissions | On-chain analysis & insights |
-| [Web3 Core Operations](./web3-core-operations/) | 9 | 🔵 Open for Submissions | Smart contracts & protocols |
-| [AI-Enhanced Productivity](./ai-productivity/) | 6 | 🔵 Open for Submissions | API & automation |
-| [Enterprise & Team Skills](./enterprise-skills/) | 6 | 🔵 Open for Submissions | Code quality & collaboration |
-| [Platform Challenge](./platform-challenge/) | - | 🆕 Meta Track | Skill routing & coverage |
+| Challenge Track                                     | Skills | Status                  | Focus                        |
+| --------------------------------------------------- | ------ | ----------------------- | ---------------------------- |
+| [Web3 Data Intelligence](./web3-data-intelligence/) | 2      | 🔵 Open for Submissions | On-chain analysis & insights |
+| [Web3 Core Operations](./web3-core-operations/)     | 9      | 🔵 Open for Submissions | Smart contracts & protocols  |
+| [AI-Enhanced Productivity](./ai-productivity/)      | 6      | 🔵 Open for Submissions | API & automation             |
+| [Enterprise & Team Skills](./enterprise-skills/)    | 6      | 🔵 Open for Submissions | Code quality & collaboration |
+| [Platform Challenge](./platform-challenge/)         | -      | 🆕 Meta Track           | Skill routing & coverage     |
 
 > **Note:** SpoonOS Skills is the foundational collection for Vibe Coding, not a challenge track. You can still submit issues and PRs for improvements.
 
@@ -43,10 +43,10 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 
 **Focus:** The "Brain" of Web3 - On-chain analysis, indexing, and transforming raw blockchain data into actionable insights.
 
-| Skill | Description | Scripts |
-|-------|-------------|---------|
-| [On-Chain Analysis](./web3-data-intelligence/onchain-analysis/) | Transaction tracking, whale monitoring | 6 |
-| [Security Analysis](./web3-data-intelligence/security-analysis/) | Smart contract auditing, vulnerability detection | 4 |
+| Skill                                                            | Description                                      | Scripts |
+| ---------------------------------------------------------------- | ------------------------------------------------ | ------- |
+| [On-Chain Analysis](./web3-data-intelligence/onchain-analysis/)  | Transaction tracking, whale monitoring           | 6       |
+| [Security Analysis](./web3-data-intelligence/security-analysis/) | Smart contract auditing, vulnerability detection | 4       |
 
 **Challenge:** Build skills that transform raw blockchain data into valuable insights.
 
@@ -56,17 +56,17 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 
 **Focus:** The "Engine Room" of Web3 - Smart contracts, protocol management, and blockchain infrastructure.
 
-| Skill | Description | Scripts |
-|-------|-------------|---------|
-| [Bridge](./web3-core-operations/bridge/) | Cross-chain transfers | 3 |
-| [DAO Tooling](./web3-core-operations/dao-tooling/) | Governance, proposals, treasury | 4 |
-| [DeFi](./web3-core-operations/defi/) | Core DeFi operations | 5 |
-| [DeFi Protocols](./web3-core-operations/defi-protocols/) | Protocol-specific integrations | 4 |
-| [Identity & Auth](./web3-core-operations/identity-auth/) | ENS, SIWE, sessions | 3 |
-| [Neo](./web3-core-operations/neo/) | Neo N3 blockchain | 4 |
-| [NFT](./web3-core-operations/nft/) | NFT minting, trading | 4 |
-| [Solana](./web3-core-operations/solana/) | Solana ecosystem | 5 |
-| [Wallet](./web3-core-operations/wallet/) | Wallet management | 5 |
+| Skill                                                    | Description                     | Scripts |
+| -------------------------------------------------------- | ------------------------------- | ------- |
+| [Bridge](./web3-core-operations/bridge/)                 | Cross-chain transfers           | 3       |
+| [DAO Tooling](./web3-core-operations/dao-tooling/)       | Governance, proposals, treasury | 4       |
+| [DeFi](./web3-core-operations/defi/)                     | Core DeFi operations            | 5       |
+| [DeFi Protocols](./web3-core-operations/defi-protocols/) | Protocol-specific integrations  | 4       |
+| [Identity & Auth](./web3-core-operations/identity-auth/) | ENS, SIWE, sessions             | 3       |
+| [Neo](./web3-core-operations/neo/)                       | Neo N3 blockchain               | 4       |
+| [NFT](./web3-core-operations/nft/)                       | NFT minting, trading            | 4       |
+| [Solana](./web3-core-operations/solana/)                 | Solana ecosystem                | 5       |
+| [Wallet](./web3-core-operations/wallet/)                 | Wallet management               | 5       |
 
 **Challenge:** Build skills that enable seamless blockchain protocol interactions.
 
@@ -76,14 +76,14 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 
 **Focus:** AI-powered automation for modern development workflows - not just API wrappers, but intelligent automation.
 
-| Skill | Description | Status |
-|-------|-------------|--------|
+| Skill                                                 | Description             | Status           |
+| ----------------------------------------------------- | ----------------------- | ---------------- |
 | [API Integration](./ai-productivity/api-integration/) | REST, GraphQL, webhooks | 🔵 Accepting PRs |
-| [Database](./ai-productivity/database/) | SQL, NoSQL, vector DBs | 🔵 Accepting PRs |
-| [Messaging](./ai-productivity/messaging/) | Slack, Discord, Email | 🔵 Accepting PRs |
-| [Cloud Services](./ai-productivity/cloud-services/) | AWS, GCP, Azure | 🔵 Accepting PRs |
-| [Monitoring](./ai-productivity/monitoring/) | Prometheus, Grafana | 🔵 Accepting PRs |
-| [Storage](./ai-productivity/storage/) | S3, GCS, files | 🔵 Accepting PRs |
+| [Database](./ai-productivity/database/)               | SQL, NoSQL, vector DBs  | 🔵 Accepting PRs |
+| [Messaging](./ai-productivity/messaging/)             | Slack, Discord, Email   | 🔵 Accepting PRs |
+| [Cloud Services](./ai-productivity/cloud-services/)   | AWS, GCP, Azure         | 🔵 Accepting PRs |
+| [Monitoring](./ai-productivity/monitoring/)           | Prometheus, Grafana     | 🔵 Accepting PRs |
+| [Storage](./ai-productivity/storage/)                 | S3, GCS, files          | 🔵 Accepting PRs |
 
 **Challenge:** Build skills that make AI agents genuinely productive in real-world workflows.
 
@@ -93,14 +93,14 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 
 **Focus:** Professional collaboration, project management, security compliance, and team productivity.
 
-| Skill | Description | Status |
-|-------|-------------|--------|
-| [Code Review](./enterprise-skills/code-review/) | Automated review, security scanning | 🔵 Accepting PRs |
-| [Documentation](./enterprise-skills/documentation/) | README, API docs, changelogs | 🔵 Accepting PRs |
-| [Refactoring](./enterprise-skills/refactoring/) | Extract, rename, cleanup | 🔵 Accepting PRs |
-| [Debugging](./enterprise-skills/debugging/) | Error analysis, log parsing | 🔵 Accepting PRs |
-| [Testing](./enterprise-skills/testing/) | Test generation, coverage | 🔵 Accepting PRs |
-| [Performance](./enterprise-skills/performance/) | Profiling, optimization | 🔵 Accepting PRs |
+| Skill                                               | Description                         | Status           |
+| --------------------------------------------------- | ----------------------------------- | ---------------- |
+| [Code Review](./enterprise-skills/code-review/)     | Automated review, security scanning | 🔵 Accepting PRs |
+| [Documentation](./enterprise-skills/documentation/) | README, API docs, changelogs        | 🔵 Accepting PRs |
+| [Refactoring](./enterprise-skills/refactoring/)     | Extract, rename, cleanup            | 🔵 Accepting PRs |
+| [Debugging](./enterprise-skills/debugging/)         | Error analysis, log parsing         | 🔵 Accepting PRs |
+| [Testing](./enterprise-skills/testing/)             | Test generation, coverage           | 🔵 Accepting PRs |
+| [Performance](./enterprise-skills/performance/)     | Profiling, optimization             | 🔵 Accepting PRs |
 
 **Challenge:** Build skills that enhance team productivity and code quality at scale.
 
@@ -111,6 +111,7 @@ A curated collection of high-quality Claude Code skills for SpoonOS development,
 **Focus:** Meta-level improvements to the SpoonOS skill system itself.
 
 **Challenge Areas:**
+
 - **Skill Discovery & Routing**: Semantic matching, multi-skill orchestration
 - **Coverage Analysis**: Gap detection, quality metrics
 - **Platform Optimization**: Caching, parallel execution, error recovery
@@ -191,12 +192,12 @@ cp -r web3-core-operations/* .agent/skills/
 
 With SpoonOS skills installed, describe your goal and the AI generates complete agents:
 
-| You Say | Skills Used | Generated Output |
-|---------|-------------|------------------|
-| "Build a trading bot for Uniswap" | agent-development, defi | Complete `SpoonReactSkill` agent |
+| You Say                           | Skills Used                         | Generated Output                   |
+| --------------------------------- | ----------------------------------- | ---------------------------------- |
+| "Build a trading bot for Uniswap" | agent-development, defi             | Complete `SpoonReactSkill` agent   |
 | "Create a whale monitoring alert" | agent-development, onchain-analysis | Agent with Telegram/Discord alerts |
-| "Deploy my agent to AWS Lambda" | deployment-guide | Dockerfile + Lambda handler |
-| "Add security checks to my bot" | tool-development, security-analysis | Agent that loads security skills |
+| "Deploy my agent to AWS Lambda"   | deployment-guide                    | Dockerfile + Lambda handler        |
+| "Add security checks to my bot"   | tool-development, security-analysis | Agent that loads security skills   |
 
 ## Example: Building a Web3 Skill Agent
 
@@ -255,16 +256,16 @@ if __name__ == "__main__":
 
 **Empower developers to build SpoonOS Agents and applications.**
 
-| Skill | Description | Scripts |
-|-------|-------------|---------|
-| [Agent Development](./spoonos-skills/agent-development/) | Build AI agents with SpoonReactMCP/SpoonReactSkill | 3 |
-| [Graph Development](./spoonos-skills/graph-development/) | StateGraph workflow construction | 2 |
-| [ERC-8004 Standard](./spoonos-skills/erc8004-standard/) | Trustless on-chain agent identity | 1 |
-| [Tool Development](./spoonos-skills/tool-development/) | MCP tools and toolkit extensions | 2 |
-| [Application Templates](./spoonos-skills/application-templates/) | Trading bot, NFT minter, DAO assistant | 3 |
-| [Platform Integration](./spoonos-skills/platform-integration/) | Telegram, Discord, REST API, Scheduler | 4 |
-| [Deployment Guide](./spoonos-skills/deployment-guide/) | Docker, AWS Lambda, Cloud Run | 3 |
-| [Testing Patterns](./spoonos-skills/testing-patterns/) | Unit tests, LLM mocking, graph tests | 3 |
+| Skill                                                            | Description                                        | Scripts |
+| ---------------------------------------------------------------- | -------------------------------------------------- | ------- |
+| [Agent Development](./spoonos-skills/agent-development/)         | Build AI agents with SpoonReactMCP/SpoonReactSkill | 3       |
+| [Graph Development](./spoonos-skills/graph-development/)         | StateGraph workflow construction                   | 2       |
+| [ERC-8004 Standard](./spoonos-skills/erc8004-standard/)          | Trustless on-chain agent identity                  | 1       |
+| [Tool Development](./spoonos-skills/tool-development/)           | MCP tools and toolkit extensions                   | 2       |
+| [Application Templates](./spoonos-skills/application-templates/) | Trading bot, NFT minter, DAO assistant             | 3       |
+| [Platform Integration](./spoonos-skills/platform-integration/)   | Telegram, Discord, REST API, Scheduler             | 4       |
+| [Deployment Guide](./spoonos-skills/deployment-guide/)           | Docker, AWS Lambda, Cloud Run                      | 3       |
+| [Testing Patterns](./spoonos-skills/testing-patterns/)           | Unit tests, LLM mocking, graph tests               | 3       |
 
 [View SpoonOS Skills Documentation →](./spoonos-skills/README.md)
 
